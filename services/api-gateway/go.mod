@@ -1,3 +1,3 @@
-module github.com/Kost0/internship-exchange/tree/main/services/api-gateway
+module github.com/Kost0/internship-exchange/services/api-gateway
 
 go 1.26.1

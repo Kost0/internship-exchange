@@ -1,3 +1,3 @@
-module github.com/Kost0/internship-exchange/tree/main/services/profile-service
+module github.com/Kost0/internship-exchange/services/profile-service
 
 go 1.26.1
