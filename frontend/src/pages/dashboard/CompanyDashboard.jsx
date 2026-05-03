@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { listingsApi } from '@/api/listings'
-import { applicationsApi } from '@/api/applications'
-import StatusBadge from '@/components/StatusBadge'
-import SkillTag from '@/components/SkillTag'
+import { listingsApi } from '../../api/listings'
+import { applicationsApi } from '../../api/applications'
+import StatusBadge from '../../components/StatusBadge'
+import SkillTag from '../../components/SkillTag'
 
 export default function CompanyDashboard() {
     const qc = useQueryClient()

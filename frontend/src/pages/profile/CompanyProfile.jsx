@@ -2,9 +2,9 @@ import { useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { profileApi } from '@/api/profile'
-import { listingsApi } from '@/api/listings'
-import JobCard from '@/components/JobCard'
+import { profileApi } from '../../api/profile'
+import { listingsApi } from '../../api/listings'
+import JobCard from '../../components/JobCard'
 
 export default function CompanyProfile({ own = false }) {
     const { id } = useParams()

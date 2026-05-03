@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { applicationsApi } from '@/api/applications'
-import StatusBadge from '@/components/StatusBadge'
+import { applicationsApi } from '../../api/applications'
+import StatusBadge from '../../components/StatusBadge'
 
 export default function StudentDashboard() {
     const qc = useQueryClient()

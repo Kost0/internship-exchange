@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { profileApi } from '@/api/profile'
-import SkillTag from '@/components/SkillTag'
+import { profileApi } from '../../api/profile'
+import SkillTag from '../../components/SkillTag'
 
 const degreeLabels = { bachelor: 'Бакалавр', master: 'Магистр', phd: 'Аспирант' }
 const levelLabels = { beginner: 'Начинающий', intermediate: 'Средний', advanced: 'Продвинутый' }

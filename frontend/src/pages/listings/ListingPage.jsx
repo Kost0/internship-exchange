@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { listingsApi } from '@/api/listings'
-import JobCard from '@/components/JobCard'
+import { listingsApi } from '../../api/listings'
+import JobCard from '../../components/JobCard'
 
 const formats = [
     { value: '', label: 'Все форматы' },
@@ -80,7 +80,7 @@ export default function ListingsPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {data?.items.map((listing) => (
+                    {data.items?.map((listing) => (
                         <JobCard key={listing.id} listing={listing} />
                     ))}
                 </div>

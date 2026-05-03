@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { listingsApi } from '@/api/listings'
-import { applicationsApi } from '@/api/applications'
-import { useAuthStore } from '@/store/auth'
-import SkillTag from '@/components/SkillTag'
+import { listingsApi } from '../../api/listings'
+import { applicationsApi } from '../../api/applications'
+import { useAuthStore } from '../../store/auth'
+import SkillTag from '../../components/SkillTag'
 
 const formatLabels = { office: 'Офис', remote: 'Удалённо', hybrid: 'Гибрид' }
 const employmentLabels = { full_time: 'Полная занятость', part_time: 'Частичная', project: 'Проектная' }

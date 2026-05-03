@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from '../store/auth'
 import clsx from 'clsx'
 
 export default function Navbar() {
