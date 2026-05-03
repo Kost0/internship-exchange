@@ -26,7 +26,6 @@ export default function ListingsPage() {
 
     return (
         <div>
-            {/* Hero */}
             <div className="bg-primary-500 rounded-3xl px-10 py-12 mb-8 text-white">
                 <h1 className="text-3xl font-bold mb-2">Найди стажировку своей мечты</h1>
                 <p className="text-primary-100 mb-6">Тысячи компаний ищут молодых специалистов прямо сейчас</p>
@@ -35,7 +34,7 @@ export default function ListingsPage() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Поиск по вакансиям, компаниям, навыкам..."
-                        className="flex-1 px-5 py-3 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+                        className="flex-1 px-5 py-3 rounded-xl text-gray-900 text-sm border border-white/40 focus:outline-none focus:ring-2 focus:ring-white"
                     />
                     <button
                         type="submit"
@@ -46,7 +45,6 @@ export default function ListingsPage() {
                 </form>
             </div>
 
-            {/* Filters */}
             <div className="flex items-center gap-3 mb-6 flex-wrap">
                 <span className="text-sm font-medium text-gray-500">Формат:</span>
                 {formats.map((f) => (
@@ -64,14 +62,12 @@ export default function ListingsPage() {
                 ))}
             </div>
 
-            {/* Results header */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold text-gray-900">
-                    {data ? `Найдено вакансий: ${data.total}` : 'Вакансии'}
+                    {`Найдено вакансий: ${data?.total ?? 0}`}
                 </h2>
             </div>
 
-            {/* Grid */}
             {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Array.from({ length: 6 }).map((_, i) => (
