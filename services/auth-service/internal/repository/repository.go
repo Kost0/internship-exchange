@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Kost0/internship-exchange/services/auth-service/internal/model"

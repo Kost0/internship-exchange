@@ -25,13 +25,13 @@ type TokenPair struct {
 }
 
 type AuthService struct {
-	repo            *repository.UserRepo
+	repo            *repository.UserRepository
 	jwtSecret       []byte
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
 }
 
-func NewAuthService(repo *repository.UserRepo, jwtSecret string, accessTTL, refreshTTL time.Duration) *AuthService {
+func NewAuthService(repo *repository.UserRepository, jwtSecret string, accessTTL, refreshTTL time.Duration) *AuthService {
 	return &AuthService{
 		repo:            repo,
 		jwtSecret:       []byte(jwtSecret),
