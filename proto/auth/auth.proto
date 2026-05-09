@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "github.com/Kost0/internship-exchange/proto/auth";
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}
+
+message RegisterRequest {
+  string email    = 1;
+  string password = 2;
+  string role     = 3;
+}
+
+message RegisterResponse {
+  string user_id       = 1;
+  string email         = 2;
+  string role          = 3;
+  string access_token  = 4;
+  string refresh_token = 5;
+}
+
+message LoginRequest {
+  string email    = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string user_id       = 1;
+  string email         = 2;
+  string role          = 3;
+  string access_token  = 4;
+  string refresh_token = 5;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  string user_id = 1;
+  string role    = 2;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token  = 1;
+  string refresh_token = 2;
+}
