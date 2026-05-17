@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package application;
+
+option go_package = "github.com/Kost0/internship-exchange/proto/application";
+
+service ApplicationService {
+  rpc Apply(ApplyRequest) returns (ApplicationResponse);
+  rpc GetMyApplications(GetMyApplicationsRequest) returns (GetApplicationsResponse);
+  rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
+  rpc GetListingApplications(GetListingApplicationsRequest) returns (GetApplicationsResponse);
+  rpc ChangeStatus(ChangeStatusRequest) returns (ApplicationResponse);
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+}
+
+message ApplicationEvent {
+  string id             = 1;
+  string application_id = 2;
+  string old_status     = 3;
+  string new_status     = 4;
+  string comment        = 5;
+  string changed_at     = 6;
+}
+
+message StudentInfo {
+  string id         = 1;
+  string first_name = 2;
+  string last_name  = 3;
+  string city       = 4;
+  string avatar_url = 5;
+  string resume_url = 6;
+}
+
+message ListingInfo {
+  string id         = 1;
+  string title      = 2;
+  string company_id = 3;
+  string company_name = 4;
+}
+
+message ApplicationResponse {
+  string id           = 1;
+  string student_id   = 2;
+  string listing_id   = 3;
+  string cover_letter = 4;
+  string status       = 5;
+  string created_at   = 6;
+  string updated_at   = 7;
+  StudentInfo student = 8;
+  ListingInfo listing = 9;
+  repeated ApplicationEvent events = 10;
+}
+
+message ApplyRequest {
+  string student_id   = 1;
+  string listing_id   = 2;
+  string cover_letter = 3;
+}
+
+message GetMyApplicationsRequest {
+  string student_id = 1;
+}
+
+message GetApplicationsResponse {
+  repeated ApplicationResponse items = 1;
+}
+
+message WithdrawRequest  { string id = 1; string student_id = 2; }
+message WithdrawResponse { bool success = 1; }
+
+message GetListingApplicationsRequest {
+  string listing_id  = 1;
+  string company_id  = 2;
+}
+
+message ChangeStatusRequest {
+  string id         = 1;
+  string company_id = 2;
+  string status     = 3;
+  string comment    = 4;
+}
+
+message GetHistoryRequest {
+  string id         = 1;
+  string company_id = 2;
+}
+
+message GetHistoryResponse {
+  repeated ApplicationEvent events = 1;
+}

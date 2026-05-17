@@ -62,7 +62,6 @@ func runMigrations(ctx context.Context, pool *pgxpool.Pool) error {
 	if err != nil {
 		return err
 	}
-
 	_, err = pool.Exec(ctx, string(migration))
 	return err
 }

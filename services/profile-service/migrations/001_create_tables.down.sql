@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS student_languages;
+DROP TABLE IF EXISTS student_skills;
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS experiences;
+DROP TABLE IF EXISTS educations;
+DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS companies;

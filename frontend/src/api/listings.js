@@ -1,11 +1,11 @@
-import { apiClient } from './client'
+import { apiClient, publicClient } from './client'
 
 export const listingsApi = {
     getListings: (filters) =>
-        apiClient.get('/listings', { params: filters }).then((r) => r.data),
+        publicClient.get('/listings', { params: filters }).then((r) => r.data),
 
     getListing: (id) =>
-        apiClient.get(`/listings/${id}`).then((r) => r.data),
+        publicClient.get(`/listings/${id}`).then((r) => r.data),
 
     getMyListings: () =>
         apiClient.get('/listings/my').then((r) => r.data),

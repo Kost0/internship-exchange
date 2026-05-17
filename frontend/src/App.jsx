@@ -23,61 +23,61 @@ function RequireRole({ role, children }) {
 }
 
 export default function App() {
-  return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    return (
+        <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-        <Route element={<Layout />}>
-          <Route path="/" element={<ListingsPage />} />
-          <Route path="/listings/:id" element={<ListingDetail />} />
-          <Route path="/companies/:id" element={<CompanyProfile />} />
+            <Route element={<Layout />}>
+                <Route path="/" element={<ListingsPage />} />
+                <Route path="/listings/:id" element={<ListingDetail />} />
+                <Route path="/companies/:id" element={<CompanyProfile />} />
 
-          <Route
-              path="/profile"
-              element={
-                <RequireRole role="student">
-                  <StudentProfile />
-                </RequireRole>
-              }
-          />
-          <Route
-              path="/company/profile"
-              element={
-                <RequireRole role="company">
-                  <CompanyProfile own />
-                </RequireRole>
-              }
-          />
-          <Route
-              path="/dashboard"
-              element={
-                <RequireAuth>
-                  <DashboardRedirect />
-                </RequireAuth>
-              }
-          />
-          <Route
-              path="/dashboard/student"
-              element={
-                <RequireRole role="student">
-                  <StudentDashboard />
-                </RequireRole>
-              }
-          />
-          <Route
-              path="/dashboard/company"
-              element={
-                <RequireRole role="company">
-                  <CompanyDashboard />
-                </RequireRole>
-              }
-          />
-        </Route>
+                <Route
+                    path="/profile"
+                    element={
+                        <RequireRole role="student">
+                            <StudentProfile />
+                        </RequireRole>
+                    }
+                />
+                <Route
+                    path="/company/profile"
+                    element={
+                        <RequireRole role="company">
+                            <CompanyProfile own />
+                        </RequireRole>
+                    }
+                />
+                <Route
+                    path="/dashboard"
+                    element={
+                        <RequireAuth>
+                            <DashboardRedirect />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/dashboard/student"
+                    element={
+                        <RequireRole role="student">
+                            <StudentDashboard />
+                        </RequireRole>
+                    }
+                />
+                <Route
+                    path="/dashboard/company"
+                    element={
+                        <RequireRole role="company">
+                            <CompanyDashboard />
+                        </RequireRole>
+                    }
+                />
+            </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-  )
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+    )
 }
 
 function DashboardRedirect() {

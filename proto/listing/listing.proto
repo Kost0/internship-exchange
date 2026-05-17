@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package listing;
+
+option go_package = "github.com/Kost0/internship-exchange/proto/listing";
+
+service ListingService {
+  rpc GetListings(GetListingsRequest) returns (GetListingsResponse);
+  rpc GetListing(GetListingRequest) returns (ListingResponse);
+  rpc GetMyListings(GetMyListingsRequest) returns (GetMyListingsResponse);
+  rpc CreateListing(CreateListingRequest) returns (ListingResponse);
+  rpc UpdateListing(UpdateListingRequest) returns (ListingResponse);
+  rpc DeleteListing(DeleteListingRequest) returns (DeleteListingResponse);
+  rpc PublishListing(PublishListingRequest) returns (ListingResponse);
+  rpc CloseListing(CloseListingRequest) returns (ListingResponse);
+}
+
+message ListingSkill {
+  string id         = 1;
+  string listing_id = 2;
+  string skill      = 3;
+  bool   is_required = 4;
+}
+
+message CompanyInfo {
+  string id      = 1;
+  string name    = 2;
+  string logo_url = 3;
+  string industry = 4;
+  string city    = 5;
+}
+
+message ListingResponse {
+  string id              = 1;
+  string company_id      = 2;
+  CompanyInfo company    = 3;
+  string title           = 4;
+  string description     = 5;
+  string requirements    = 6;
+  string what_we_offer   = 7;
+  string city            = 8;
+  string format          = 9;
+  string employment_type = 10;
+  int64  salary_from     = 11;
+  int64  salary_to       = 12;
+  string salary_currency = 13;
+  string deadline        = 14;
+  string status          = 15;
+  repeated ListingSkill skills = 16;
+  string created_at      = 17;
+  string updated_at      = 18;
+}
+
+message GetListingsRequest {
+  string query           = 1;
+  string format          = 2;
+  string employment_type = 3;
+  string city            = 4;
+  string skill           = 5;
+  int32  page            = 6;
+  int32  limit           = 7;
+}
+
+message GetListingsResponse {
+  repeated ListingResponse items = 1;
+  int64 total = 2;
+  int32 page  = 3;
+  int32 limit = 4;
+}
+
+message GetListingRequest    { string id = 1; }
+message GetMyListingsRequest { string company_id = 1; }
+
+message GetMyListingsResponse {
+  repeated ListingResponse items = 1;
+}
+
+message CreateListingRequest {
+  string company_id      = 1;
+  string title           = 2;
+  string description     = 3;
+  string requirements    = 4;
+  string what_we_offer   = 5;
+  string city            = 6;
+  string format          = 7;
+  string employment_type = 8;
+  int64  salary_from     = 9;
+  int64  salary_to       = 10;
+  string salary_currency = 11;
+  string deadline        = 12;
+}
+
+message UpdateListingRequest {
+  string id              = 1;
+  string company_id      = 2;
+  string title           = 3;
+  string description     = 4;
+  string requirements    = 5;
+  string what_we_offer   = 6;
+  string city            = 7;
+  string format          = 8;
+  string employment_type = 9;
+  int64  salary_from     = 10;
+  int64  salary_to       = 11;
+  string salary_currency = 12;
+  string deadline        = 13;
+}
+
+message DeleteListingRequest  { string id = 1; string company_id = 2; }
+message DeleteListingResponse { bool success = 1; }
+message PublishListingRequest { string id = 1; string company_id = 2; }
+message CloseListingRequest   { string id = 1; string company_id = 2; }

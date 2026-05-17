@@ -1,13 +1,15 @@
 services:
+
   postgres:
-    image: postgres:17-alpine
-    ports: ["5433:5432"]
+    image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -16,49 +18,160 @@ services:
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+    image: rabbitmq:3.13-management
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes: [rabbitmq:/var/lib/rabbitmq]
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 10s
 
   minio:
-    image: minio/minio:latest
+    image: minio/minio
     command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
     ports:
       - "9000:9000"
       - "9001:9001"
-    volumes: [minio:/data]
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
-    volumes: [redis:/data]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 5
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    environment:
+      GRPC_ADDR: :50051
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/auth_db?sslmode=disable
+      JWT_SECRET: supersecretkey
+      ACCESS_TOKEN_TTL: 15m
+      REFRESH_TOKEN_TTL: 720h
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50051:50051"
+
+  profile-service:
+    build:
+      context: .
+      dockerfile: services/profile-service/Dockerfile
+    environment:
+      GRPC_ADDR: :50052
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/profile_db?sslmode=disable
+      MINIO_ADDR: minio:9000
+      MINIO_USER: minioadmin
+      MINIO_PASS: minioadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "50052:50052"
+
+  listing-service:
+    build:
+      context: .
+      dockerfile: services/listing-service/Dockerfile
+    environment:
+      GRPC_ADDR: :50053
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/listing_db?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50053:50053"
+
+  application-service:
+    build:
+      context: .
+      dockerfile: services/application-service/Dockerfile
+    environment:
+      GRPC_ADDR: :50054
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/application_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "50054:50054"
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      SMTP_HOST: smtp.mailtrap.io
+      SMTP_PORT: "587"
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      FROM_EMAIL: noreply@internship-exchange.ru
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    environment:
+      HTTP_ADDR: :8080
+      JWT_SECRET: supersecretkey
+      REDIS_ADDR: redis:6379
+      AUTH_SERVICE_ADDR: auth-service:50051
+      PROFILE_SERVICE_ADDR: profile-service:50052
+      LISTING_SERVICE_ADDR: listing-service:50053
+      APP_SERVICE_ADDR: application-service:50054
+    depends_on:
+      - auth-service
+      - profile-service
+      - listing-service
+      - application-service
+      - redis
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway
+
 volumes:
-  postgres:
-  rabbitmq:
-  minio:
-  redis:
+  postgres_data:
+  rabbitmq_data:
+  minio_data:
+  redis_data:

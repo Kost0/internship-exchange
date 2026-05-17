@@ -28,6 +28,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
+
 		return
 	}
 
@@ -39,9 +40,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if status.Code(err) == codes.AlreadyExists {
 			proxy.WriteError(w, http.StatusConflict, "email already taken")
+
 			return
 		}
 		proxy.WriteError(w, http.StatusInternalServerError, "internal error")
+
 		return
 	}
 
@@ -77,6 +80,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if status.Code(err) == codes.Unauthenticated {
 			proxy.WriteError(w, http.StatusUnauthorized, "invalid credentials")
+
 			return
 		}
 
@@ -104,6 +108,7 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
+
 		return
 	}
 
@@ -113,9 +118,11 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if status.Code(err) == codes.Unauthenticated {
 			proxy.WriteError(w, http.StatusUnauthorized, "invalid refresh token")
+
 			return
 		}
 		proxy.WriteError(w, http.StatusInternalServerError, "internal error")
+
 		return
 	}
 

@@ -14,10 +14,14 @@ export default function ListingsPage() {
     const [filters, setFilters] = useState({ page: 1, limit: 12 })
     const [query, setQuery] = useState('')
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isError } = useQuery({
         queryKey: ['listings', filters],
         queryFn: () => listingsApi.getListings(filters),
     })
+
+    if (isError) {
+        return <p className="text-center text-gray-500 py-20">Не удалось загрузить вакансии</p>
+    }
 
     const handleSearch = (e) => {
         e.preventDefault()
@@ -76,28 +80,27 @@ export default function ListingsPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {data.items?.map((listing) => (
+                    {data?.items?.map((listing) => (
                         <JobCard key={listing.id} listing={listing} />
                     ))}
                 </div>
             )}
 
-            {/* Pagination */}
-            {data && data.total > data.limit && (
+            {(data?.total ?? 0) > (data?.limit ?? 12) && (
                 <div className="flex justify-center gap-2 mt-8">
                     <button
                         disabled={filters.page === 1}
-                        onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}
+                        onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
                         className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium disabled:opacity-40 hover:border-primary-300 transition"
                     >
                         ← Назад
                     </button>
                     <span className="px-4 py-2 text-sm text-gray-500">
-            Страница {filters.page} из {Math.ceil(data.total / data.limit)}
-          </span>
+            Страница {filters.page} из {Math.ceil((data?.total ?? 0) / (data?.limit ?? 12))}
+            </span>
                     <button
-                        disabled={(filters.page ?? 1) >= Math.ceil(data.total / data.limit)}
-                        onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}
+                        disabled={filters.page >= Math.ceil((data?.total ?? 0) / (data?.limit ?? 12))}
+                        onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
                         className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium disabled:opacity-40 hover:border-primary-300 transition"
                     >
                         Вперёд →

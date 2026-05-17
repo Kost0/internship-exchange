@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS builder
+FROM golang:1.26.1-alpine AS builder
 
 WORKDIR /app
 
@@ -8,14 +8,14 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o gateway ./cmd/main.go
+RUN go build -o api-gateway ./services/api-gateway/cmd/main.go
 
 FROM alpine:3.20
 
 WORKDIR /app
 
-COPY --from=builder /app/gateway .
+COPY --from=builder /app/api-gateway .
 
 EXPOSE 8080
 
-CMD ["./gateway"]
+CMD ["./api-gateway"]

@@ -23,17 +23,14 @@ func New(cfg *config.Config) http.Handler {
 	if err != nil {
 		panic(err)
 	}
-
 	profileConn, err := clients.NewGRPCConn(cfg.ProfileServiceAddr)
 	if err != nil {
 		panic(err)
 	}
-
 	listingConn, err := clients.NewGRPCConn(cfg.ListingServiceAddr)
 	if err != nil {
 		panic(err)
 	}
-	
 	appConn, err := clients.NewGRPCConn(cfg.AppServiceAddr)
 	if err != nil {
 		panic(err)
@@ -47,6 +44,9 @@ func New(cfg *config.Config) http.Handler {
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.Logger)
 	r.Use(middleware.CORS)
+	r.Options("/*", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
@@ -55,10 +55,23 @@ func New(cfg *config.Config) http.Handler {
 			r.Post("/refresh", authHandler.Refresh)
 		})
 
-		r.Get("/listings", listingHandler.GetListings)
-		r.Get("/listings/{id}", listingHandler.GetListing)
-		r.Get("/profile/company/{id}", profileHandler.GetCompanyProfile)
 		r.Get("/companies/{id}", profileHandler.GetCompanyProfile)
+
+		r.Route("/listings", func(r chi.Router) {
+			r.Get("/", listingHandler.GetListings)
+			r.Get("/{id}", listingHandler.GetListing)
+
+			r.Group(func(r chi.Router) {
+				r.Use(authMW.Authenticate)
+				r.Get("/my", listingHandler.GetMyListings)
+				r.Post("/", listingHandler.CreateListing)
+				r.Put("/{id}", listingHandler.UpdateListing)
+				r.Delete("/{id}", listingHandler.DeleteListing)
+				r.Post("/{id}/publish", listingHandler.PublishListing)
+				r.Post("/{id}/close", listingHandler.CloseListing)
+				r.Get("/{id}/applications", appHandler.GetListingApplications)
+			})
+		})
 
 		r.Group(func(r chi.Router) {
 			r.Use(authMW.Authenticate)
@@ -85,16 +98,7 @@ func New(cfg *config.Config) http.Handler {
 				r.Get("/", profileHandler.GetMyCompanyProfile)
 				r.Put("/", profileHandler.UpdateCompanyProfile)
 				r.Post("/logo", profileHandler.UploadLogo)
-			})
-
-			r.Route("/listings", func(r chi.Router) {
-				r.Get("/my", listingHandler.GetMyListings)
-				r.Post("/", listingHandler.CreateListing)
-				r.Put("/{id}", listingHandler.UpdateListing)
-				r.Delete("/{id}", listingHandler.DeleteListing)
-				r.Post("/{id}/publish", listingHandler.PublishListing)
-				r.Post("/{id}/close", listingHandler.CloseListing)
-				r.Get("/{id}/applications", appHandler.GetListingApplications)
+				r.Get("/{id}", profileHandler.GetCompanyProfile)
 			})
 
 			r.Route("/applications", func(r chi.Router) {
