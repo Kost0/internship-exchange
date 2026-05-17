@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { listingsApi } from '../../api/listings'
 import { applicationsApi } from '../../api/applications'
+import { profileApi } from '../../api/profile'
 import StatusBadge from '../../components/StatusBadge'
 import SkillTag from '../../components/SkillTag'
 
@@ -167,16 +168,7 @@ export default function CompanyDashboard() {
                                             </p>
                                         )}
 
-                                        {app.student?.resumeUrl && (
-                                            <a
-                                                href={app.student.resumeUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-block mt-2 text-xs text-primary-600 hover:underline"
-                                            >
-                                                Скачать резюме
-                                            </a>
-                                        )}
+                                        {app.student?.id && <ResumeLink studentId={app.student.id} />}
 
                                         {app.status !== 'accepted' && app.status !== 'rejected' && (
                                             <div className="flex gap-2 mt-3 flex-wrap">
@@ -218,6 +210,25 @@ export default function CompanyDashboard() {
                 </div>
             </div>
         </div>
+    )
+}
+
+function ResumeLink({ studentId }) {
+    const { data } = useQuery({
+        queryKey: ['resume-link', studentId],
+        queryFn: () => profileApi.getResumeUrl(studentId),
+        enabled: !!studentId,
+    })
+    if (!data?.url) return null
+    return (
+        <a
+            href={data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-2 text-xs text-primary-600 hover:underline"
+        >
+            Скачать резюме
+        </a>
     )
 }
 

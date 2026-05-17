@@ -75,8 +75,8 @@ func (s *MinioStorage) UploadResume(ctx context.Context, userID string, data []b
 	return fmt.Sprintf("/files/%s/%s", s.privateBucket, objectName), nil
 }
 
-func (s *MinioStorage) GetResumePresignedURL(ctx context.Context, studentID string) (string, error) {
-	objectName := fmt.Sprintf("%s/resume.pdf", studentID)
+func (s *MinioStorage) GetResumePresignedURL(ctx context.Context, userID string) (string, error) {
+	objectName := fmt.Sprintf("%s/resume.pdf", userID)
 	url, err := s.client.PresignedGetObject(ctx, s.privateBucket, objectName, time.Hour, nil)
 	if err != nil {
 		return "", err
