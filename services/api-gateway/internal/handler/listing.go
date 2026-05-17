@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	profilepb "github.com/Kost0/internship-exchange/proto/profile"
+	"github.com/Kost0/internship-exchange/services/api-gateway/internal/dto"
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 
@@ -31,13 +32,11 @@ func (h *ListingHandler) GetListings(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	res, err := h.client.GetListings(r.Context(), &listingpb.GetListingsRequest{
-		Query:          q.Get("query"),
-		Format:         q.Get("format"),
-		EmploymentType: q.Get("employmentType"),
-		City:           q.Get("city"),
-		Skill:          q.Get("skill"),
-		Page:           int32QueryParam(q.Get("page"), 1),
-		Limit:          int32QueryParam(q.Get("limit"), 12),
+		Query: q.Get("query"), Format: q.Get("format"),
+		EmploymentType: q.Get("employmentType"), City: q.Get("city"),
+		Skill: q.Get("skill"),
+		Page:  int32QueryParam(q.Get("page"), 1),
+		Limit: int32QueryParam(q.Get("limit"), 12),
 	})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
@@ -45,7 +44,16 @@ func (h *ListingHandler) GetListings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	result := dto.GetListingsResponse{
+		Total: res.Total, Page: res.Page, Limit: res.Limit,
+		Items: []dto.ListingResponse{},
+	}
+	for _, l := range res.Items {
+		result.Items = append(result.Items, protoToListingDTO(l))
+
+	}
+
+	proxy.WriteJSON(w, http.StatusOK, result)
 }
 
 func (h *ListingHandler) GetListing(w http.ResponseWriter, r *http.Request) {
@@ -58,31 +66,32 @@ func (h *ListingHandler) GetListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	l := protoToListingDTO(res)
+
+	proxy.WriteJSON(w, http.StatusOK, l)
 }
 
 func (h *ListingHandler) GetMyListings(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 
-	h.syncCompany(r.Context(), userID)
-
-	res, err := h.client.GetMyListings(r.Context(), &listingpb.GetMyListingsRequest{
-		CompanyId: userID,
-	})
+	res, err := h.client.GetMyListings(r.Context(), &listingpb.GetMyListingsRequest{CompanyId: userID})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
 
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	items := []dto.ListingResponse{}
+
+	for _, l := range res.Items {
+		items = append(items, protoToListingDTO(l))
+	}
+
+	proxy.WriteJSON(w, http.StatusOK, items)
 }
 
 func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
-
-	h.syncCompany(r.Context(), userID)
-
 	var body struct {
 		Title          string `json:"title"`
 		Description    string `json:"description"`
@@ -98,33 +107,15 @@ func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
-
 		return
 	}
 
-	if body.Format == "" {
-		body.Format = "office"
-	}
-	if body.EmploymentType == "" {
-		body.EmploymentType = "full_time"
-	}
-	if body.SalaryCurrency == "" {
-		body.SalaryCurrency = "RUB"
-	}
-
 	res, err := h.client.CreateListing(r.Context(), &listingpb.CreateListingRequest{
-		CompanyId:      userID,
-		Title:          body.Title,
-		Description:    body.Description,
-		Requirements:   body.Requirements,
-		WhatWeOffer:    body.WhatWeOffer,
-		City:           body.City,
-		Format:         body.Format,
-		EmploymentType: body.EmploymentType,
-		SalaryFrom:     body.SalaryFrom,
-		SalaryTo:       body.SalaryTo,
-		SalaryCurrency: body.SalaryCurrency,
-		Deadline:       body.Deadline,
+		CompanyId: userID, Title: body.Title, Description: body.Description,
+		Requirements: body.Requirements, WhatWeOffer: body.WhatWeOffer,
+		City: body.City, Format: body.Format, EmploymentType: body.EmploymentType,
+		SalaryFrom: body.SalaryFrom, SalaryTo: body.SalaryTo,
+		SalaryCurrency: body.SalaryCurrency, Deadline: body.Deadline,
 	})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
@@ -132,14 +123,14 @@ func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusCreated, res)
+	l := protoToListingDTO(res)
+
+	proxy.WriteJSON(w, http.StatusCreated, l)
 }
 
 func (h *ListingHandler) UpdateListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 	id := chi.URLParam(r, "id")
-
-	h.syncCompany(r.Context(), userID)
 
 	var body struct {
 		Title          string `json:"title"`
@@ -161,19 +152,11 @@ func (h *ListingHandler) UpdateListing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := h.client.UpdateListing(r.Context(), &listingpb.UpdateListingRequest{
-		Id:             id,
-		CompanyId:      userID,
-		Title:          body.Title,
-		Description:    body.Description,
-		Requirements:   body.Requirements,
-		WhatWeOffer:    body.WhatWeOffer,
-		City:           body.City,
-		Format:         body.Format,
-		EmploymentType: body.EmploymentType,
-		SalaryFrom:     body.SalaryFrom,
-		SalaryTo:       body.SalaryTo,
-		SalaryCurrency: body.SalaryCurrency,
-		Deadline:       body.Deadline,
+		Id: id, CompanyId: userID, Title: body.Title, Description: body.Description,
+		Requirements: body.Requirements, WhatWeOffer: body.WhatWeOffer,
+		City: body.City, Format: body.Format, EmploymentType: body.EmploymentType,
+		SalaryFrom: body.SalaryFrom, SalaryTo: body.SalaryTo,
+		SalaryCurrency: body.SalaryCurrency, Deadline: body.Deadline,
 	})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
@@ -181,7 +164,41 @@ func (h *ListingHandler) UpdateListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	l := protoToListingDTO(res)
+
+	proxy.WriteJSON(w, http.StatusOK, l)
+}
+
+func (h *ListingHandler) PublishListing(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	id := chi.URLParam(r, "id")
+
+	res, err := h.client.PublishListing(r.Context(), &listingpb.PublishListingRequest{Id: id, CompanyId: userID})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+
+		return
+	}
+
+	l := protoToListingDTO(res)
+
+	proxy.WriteJSON(w, http.StatusOK, l)
+}
+
+func (h *ListingHandler) CloseListing(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	id := chi.URLParam(r, "id")
+
+	res, err := h.client.CloseListing(r.Context(), &listingpb.CloseListingRequest{Id: id, CompanyId: userID})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+
+		return
+	}
+
+	l := protoToListingDTO(res)
+
+	proxy.WriteJSON(w, http.StatusOK, l)
 }
 
 func (h *ListingHandler) DeleteListing(w http.ResponseWriter, r *http.Request) {
@@ -200,42 +217,6 @@ func (h *ListingHandler) DeleteListing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func (h *ListingHandler) PublishListing(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
-	id := chi.URLParam(r, "id")
-
-	h.syncCompany(r.Context(), userID)
-
-	res, err := h.client.PublishListing(r.Context(), &listingpb.PublishListingRequest{
-		Id:        id,
-		CompanyId: userID,
-	})
-	if err != nil {
-		proxy.WriteGRPCError(w, err)
-		return
-	}
-
-	proxy.WriteJSON(w, http.StatusOK, res)
-}
-
-func (h *ListingHandler) CloseListing(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserID(r.Context())
-	id := chi.URLParam(r, "id")
-
-	h.syncCompany(r.Context(), userID)
-
-	res, err := h.client.CloseListing(r.Context(), &listingpb.CloseListingRequest{
-		Id:        id,
-		CompanyId: userID,
-	})
-	if err != nil {
-		proxy.WriteGRPCError(w, err)
-		return
-	}
-
-	proxy.WriteJSON(w, http.StatusOK, res)
 }
 
 func int32QueryParam(s string, fallback int32) int32 {
@@ -267,4 +248,34 @@ func (h *ListingHandler) syncCompany(ctx context.Context, userID string) {
 		Industry: profile.Industry,
 		City:     profile.City,
 	})
+}
+
+func protoToListingDTO(l *listingpb.ListingResponse) dto.ListingResponse {
+	res := dto.ListingResponse{
+		ID: l.Id, CompanyID: l.CompanyId, Title: l.Title,
+		Description: l.Description, Requirements: l.Requirements,
+		WhatWeOffer: l.WhatWeOffer, City: l.City, Format: l.Format,
+		EmploymentType: l.EmploymentType, SalaryFrom: l.SalaryFrom,
+		SalaryTo: l.SalaryTo, SalaryCurrency: l.SalaryCurrency,
+		Deadline: l.Deadline, Status: l.Status,
+		CreatedAt: l.CreatedAt, UpdatedAt: l.UpdatedAt,
+		Skills: []dto.ListingSkillResponse{},
+	}
+
+	if l.Company != nil {
+		res.Company = &dto.CompanyInfoResponse{
+			ID: l.Company.Id, Name: l.Company.Name,
+			LogoURL: l.Company.LogoUrl, Industry: l.Company.Industry,
+			City: l.Company.City,
+		}
+	}
+
+	for _, s := range l.Skills {
+		res.Skills = append(res.Skills, dto.ListingSkillResponse{
+			ID: s.Id, ListingID: s.ListingId,
+			Skill: s.Skill, IsRequired: s.IsRequired,
+		})
+	}
+
+	return res
 }

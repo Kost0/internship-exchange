@@ -6,6 +6,7 @@ import SkillTag from '../../components/SkillTag'
 
 const degreeLabels = { bachelor: 'Бакалавр', master: 'Магистр', phd: 'Аспирант' }
 const levelLabels = { beginner: 'Начинающий', intermediate: 'Средний', advanced: 'Продвинутый' }
+const formatLabels = { office: 'Офис', remote: 'Удалённо', hybrid: 'Гибрид' }
 
 export default function StudentProfile() {
     const qc = useQueryClient()
@@ -54,23 +55,22 @@ export default function StudentProfile() {
         onSuccess: () => qc.invalidateQueries({ queryKey: ['student-profile'] }),
     })
 
-    const { register, handleSubmit, reset } = useForm({
-        values: profile,
-    })
+    const { register, handleSubmit, reset } = useForm({ values: profile })
 
     if (isLoading) return <div className="animate-pulse space-y-4"><div className="h-40 bg-white rounded-2xl" /></div>
     if (!profile) return null
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
-            {/* Header card */}
+
+            {/* Header */}
             <div className="bg-white rounded-2xl border border-primary-100 p-6">
                 <div className="flex items-start gap-5">
                     <div className="relative flex-shrink-0">
                         <div className="w-20 h-20 rounded-2xl bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-2xl overflow-hidden">
-                            {profile.avatarUrl
-                                ? <img src={profile.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
-                                : `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`
+                            {profile.avatar_url
+                                ? <img src={profile.avatar_url} className="w-full h-full object-cover" alt="avatar" />
+                                : `${profile.first_name?.[0] ?? ''}${profile.last_name?.[0] ?? ''}`
                             }
                         </div>
                         <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition">
@@ -83,12 +83,12 @@ export default function StudentProfile() {
 
                     {editingMain ? (
                         <form onSubmit={handleSubmit((v) => updateMutation.mutate(v))} className="flex-1 grid grid-cols-2 gap-3">
-                            <input {...register('firstName')} placeholder="Имя" className="input-base" />
-                            <input {...register('lastName')} placeholder="Фамилия" className="input-base" />
+                            <input {...register('first_name')} placeholder="Имя" className="input-base" />
+                            <input {...register('last_name')} placeholder="Фамилия" className="input-base" />
                             <input {...register('city')} placeholder="Город" className="input-base" />
                             <input {...register('phone')} placeholder="Телефон" className="input-base" />
-                            <input {...register('githubUrl')} placeholder="GitHub URL" className="input-base" />
-                            <input {...register('linkedinUrl')} placeholder="LinkedIn URL" className="input-base" />
+                            <input {...register('github_url')} placeholder="GitHub URL" className="input-base" />
+                            <input {...register('linkedin_url')} placeholder="LinkedIn URL" className="input-base" />
                             <textarea {...register('bio')} placeholder="О себе" rows={2} className="input-base col-span-2 resize-none" />
                             <div className="col-span-2 flex gap-2">
                                 <button type="submit" className="btn-primary text-sm px-4 py-2">Сохранить</button>
@@ -99,26 +99,24 @@ export default function StudentProfile() {
                         <div className="flex-1">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900">{profile.firstName} {profile.lastName}</h1>
+                                    <h1 className="text-xl font-bold text-gray-900">{profile.first_name} {profile.last_name}</h1>
                                     <p className="text-sm text-gray-500 mt-0.5">{profile.city}</p>
                                     {profile.bio && <p className="text-sm text-gray-600 mt-2 max-w-lg">{profile.bio}</p>}
                                     <div className="flex gap-3 mt-3">
-                                        {profile.githubUrl && <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">GitHub</a>}
-                                        {profile.linkedinUrl && <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">LinkedIn</a>}
-                                        {profile.portfolioUrl && <a href={profile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">Портфолио</a>}
+                                        {profile.github_url && <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">GitHub</a>}
+                                        {profile.linkedin_url && <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">LinkedIn</a>}
+                                        {profile.portfolio_url && <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">Портфолио</a>}
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <button onClick={() => setEditingMain(true)} className="btn-secondary text-sm px-4 py-2">Редактировать</button>
                                     <label className="btn-secondary text-sm px-4 py-2 cursor-pointer text-center">
-                                        {profile.resumeUrl ? 'Заменить резюме' : 'Загрузить резюме'}
+                                        {profile.resume_url ? 'Заменить резюме' : 'Загрузить резюме'}
                                         <input type="file" accept=".pdf" className="hidden"
                                                onChange={(e) => e.target.files?.[0] && uploadResume.mutate(e.target.files[0])}
                                         />
                                     </label>
-                                    {profile.resumeUrl && (
-                                        <ResumeLink studentId={profile.id} />
-                                    )}
+                                    {profile.resume_url && <ResumeLink studentId={profile.id} />}
                                 </div>
                             </div>
                         </div>
@@ -132,7 +130,12 @@ export default function StudentProfile() {
                     <h2 className="font-semibold text-gray-900">Навыки</h2>
                     <button onClick={() => setAddingSkill(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
                 </div>
-                {addingSkill && <AddSkillForm onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingSkill(false) }} onCancel={() => setAddingSkill(false)} />}
+                {addingSkill && (
+                    <AddSkillForm
+                        onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingSkill(false) }}
+                        onCancel={() => setAddingSkill(false)}
+                    />
+                )}
                 <div className="flex flex-wrap gap-2">
                     {profile.skills?.map((s) => (
                         <SkillTag key={s.id} label={`${s.skill} · ${levelLabels[s.level]}`} />
@@ -146,7 +149,12 @@ export default function StudentProfile() {
                     <h2 className="font-semibold text-gray-900">Языки</h2>
                     <button onClick={() => setAddingLang(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
                 </div>
-                {addingLang && <AddLanguageForm onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingLang(false) }} onCancel={() => setAddingLang(false)} />}
+                {addingLang && (
+                    <AddLanguageForm
+                        onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingLang(false) }}
+                        onCancel={() => setAddingLang(false)}
+                    />
+                )}
                 <div className="flex flex-wrap gap-2">
                     {profile.languages?.map((l) => (
                         <SkillTag key={l.id} label={`${l.language} · ${l.level}`} variant="gray" />
@@ -214,6 +222,20 @@ export default function StudentProfile() {
     )
 }
 
+function ResumeLink({ studentId }) {
+    const { data } = useQuery({
+        queryKey: ['resume-link', studentId],
+        queryFn: () => profileApi.getResumeUrl(studentId),
+        enabled: !!studentId,
+    })
+    if (!data?.url) return null
+    return (
+        <a href={data.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 text-center hover:underline">
+            Скачать PDF
+        </a>
+    )
+}
+
 function EducationItem({ edu, onDelete }) {
     return (
         <div className="border-l-2 border-primary-200 pl-4">
@@ -221,8 +243,10 @@ function EducationItem({ edu, onDelete }) {
                 <div>
                     <p className="font-medium text-gray-900">{edu.university}</p>
                     <p className="text-sm text-gray-500">{edu.faculty} · {edu.specialization}</p>
-                    <p className="text-sm text-gray-400">{degreeLabels[edu.degree]} · {edu.startYear} — {edu.isCurrent ? 'по н.в.' : edu.endYear}</p>
-                    {edu.gpa && <p className="text-xs text-gray-400">GPA: {edu.gpa}</p>}
+                    <p className="text-sm text-gray-400">
+                        {degreeLabels[edu.degree]} · {edu.start_year} — {edu.is_current ? 'по н.в.' : edu.end_year}
+                    </p>
+                    {edu.gpa > 0 && <p className="text-xs text-gray-400">GPA: {edu.gpa}</p>}
                 </div>
                 <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>
             </div>
@@ -231,14 +255,15 @@ function EducationItem({ edu, onDelete }) {
 }
 
 function ExperienceItem({ exp, onDelete }) {
-    const formatLabels = { office: 'Офис', remote: 'Удалённо', hybrid: 'Гибрид' }
     return (
         <div className="border-l-2 border-primary-200 pl-4">
             <div className="flex items-start justify-between">
                 <div>
                     <p className="font-medium text-gray-900">{exp.position}</p>
-                    <p className="text-sm text-gray-500">{exp.companyName} · {formatLabels[exp.format]}</p>
-                    <p className="text-sm text-gray-400">{exp.startDate} — {exp.isCurrent ? 'по н.в.' : exp.endDate}</p>
+                    <p className="text-sm text-gray-500">{exp.company_name} · {formatLabels[exp.format]}</p>
+                    <p className="text-sm text-gray-400">
+                        {exp.start_date} — {exp.is_current ? 'по н.в.' : exp.end_date}
+                    </p>
                     {exp.description && <p className="text-sm text-gray-600 mt-1">{exp.description}</p>}
                 </div>
                 <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>
@@ -258,7 +283,11 @@ function ProjectItem({ project, onDelete }) {
             <div className="flex flex-wrap gap-1.5 mb-2">
                 {project.techs?.map((t) => <SkillTag key={t} label={t} />)}
             </div>
-            {project.url && <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">Открыть проект →</a>}
+            {project.url && (
+                <a href={project.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:underline">
+                    Открыть проект →
+                </a>
+            )}
         </div>
     )
 }
@@ -277,8 +306,8 @@ function AddEducationForm({ onSave, onCancel }) {
                     <option value="master">Магистр</option>
                     <option value="phd">Аспирант</option>
                 </select>
-                <input {...register('startYear', { valueAsNumber: true })} type="number" placeholder="Год начала" className="input-base" />
-                <input {...register('endYear', { valueAsNumber: true })} type="number" placeholder="Год окончания" className="input-base" />
+                <input {...register('start_year', { valueAsNumber: true })} type="number" placeholder="Год начала" className="input-base" />
+                <input {...register('end_year', { valueAsNumber: true })} type="number" placeholder="Год окончания" className="input-base" />
             </div>
             <div className="flex gap-2">
                 <button type="submit" className="btn-primary text-sm px-4 py-2">Сохранить</button>
@@ -294,10 +323,10 @@ function AddExperienceForm({ onSave, onCancel }) {
     return (
         <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="bg-primary-50 rounded-xl p-4 mb-4 space-y-3">
             <div className="grid grid-cols-2 gap-3">
-                <input {...register('companyName', { required: true })} placeholder="Компания *" className="input-base" />
+                <input {...register('company_name', { required: true })} placeholder="Компания *" className="input-base" />
                 <input {...register('position', { required: true })} placeholder="Должность *" className="input-base" />
-                <input {...register('startDate')} type="date" className="input-base" />
-                <input {...register('endDate')} type="date" className="input-base" />
+                <input {...register('start_date')} type="date" className="input-base" />
+                <input {...register('end_date')} type="date" className="input-base" />
                 <select {...register('format')} className="input-base">
                     <option value="office">Офис</option>
                     <option value="remote">Удалённо</option>
@@ -376,19 +405,5 @@ function AddLanguageForm({ onSave, onCancel }) {
                 <button type="button" onClick={onCancel} className="btn-secondary text-sm px-4 py-2">Отмена</button>
             </div>
         </form>
-    )
-}
-
-function ResumeLink({ studentId }) {
-    const { data } = useQuery({
-        queryKey: ['resume-link', studentId],
-        queryFn: () => profileApi.getResumeUrl(studentId),
-        enabled: !!studentId,
-    })
-    if (!data?.url) return null
-    return (
-        <a href={data.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 text-center hover:underline">
-            Скачать PDF
-        </a>
     )
 }

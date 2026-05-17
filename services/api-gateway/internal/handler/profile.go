@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Kost0/internship-exchange/services/api-gateway/internal/dto"
 	"google.golang.org/grpc"
 
 	profilepb "github.com/Kost0/internship-exchange/proto/profile"
@@ -25,9 +26,7 @@ func NewProfileHandler(conn *grpc.ClientConn) *ProfileHandler {
 func (h *ProfileHandler) GetMyStudentProfile(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 
-	res, err := h.client.GetMyStudentProfile(r.Context(), &profilepb.GetMyStudentProfileRequest{
-		UserId: userID,
-	})
+	res, err := h.client.GetMyStudentProfile(r.Context(), &profilepb.GetMyStudentProfileRequest{UserId: userID})
 	if err != nil {
 		log.Printf("GetMyStudentProfile error: %v", err)
 		proxy.WriteGRPCError(w, err)
@@ -35,22 +34,20 @@ func (h *ProfileHandler) GetMyStudentProfile(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToStudentDTO(res))
 }
 
 func (h *ProfileHandler) GetStudentProfile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	res, err := h.client.GetStudentProfile(r.Context(), &profilepb.GetStudentProfileRequest{
-		Id: id,
-	})
+	res, err := h.client.GetStudentProfile(r.Context(), &profilepb.GetStudentProfileRequest{Id: id})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
 
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToStudentDTO(res))
 }
 
 func (h *ProfileHandler) UpdateStudentProfile(w http.ResponseWriter, r *http.Request) {
@@ -73,15 +70,9 @@ func (h *ProfileHandler) UpdateStudentProfile(w http.ResponseWriter, r *http.Req
 	}
 
 	res, err := h.client.UpdateStudentProfile(r.Context(), &profilepb.UpdateStudentProfileRequest{
-		UserId:       userID,
-		FirstName:    body.FirstName,
-		LastName:     body.LastName,
-		Phone:        body.Phone,
-		City:         body.City,
-		Bio:          body.Bio,
-		GithubUrl:    body.GithubURL,
-		LinkedinUrl:  body.LinkedinURL,
-		PortfolioUrl: body.PortfolioURL,
+		UserId: userID, FirstName: body.FirstName, LastName: body.LastName,
+		Phone: body.Phone, City: body.City, Bio: body.Bio,
+		GithubUrl: body.GithubURL, LinkedinUrl: body.LinkedinURL, PortfolioUrl: body.PortfolioURL,
 	})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
@@ -89,7 +80,7 @@ func (h *ProfileHandler) UpdateStudentProfile(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToStudentDTO(res))
 }
 
 func (h *ProfileHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
@@ -464,31 +455,27 @@ func (h *ProfileHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 func (h *ProfileHandler) GetMyCompanyProfile(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 
-	res, err := h.client.GetMyCompanyProfile(r.Context(), &profilepb.GetMyCompanyProfileRequest{
-		UserId: userID,
-	})
+	res, err := h.client.GetMyCompanyProfile(r.Context(), &profilepb.GetMyCompanyProfileRequest{UserId: userID})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
 
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToCompanyDTO(res))
 }
 
 func (h *ProfileHandler) GetCompanyProfile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	res, err := h.client.GetCompanyProfile(r.Context(), &profilepb.GetCompanyProfileRequest{
-		Id: id,
-	})
+	res, err := h.client.GetCompanyProfile(r.Context(), &profilepb.GetCompanyProfileRequest{Id: id})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
 
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToCompanyDTO(res))
 }
 
 func (h *ProfileHandler) UpdateCompanyProfile(w http.ResponseWriter, r *http.Request) {
@@ -514,18 +501,10 @@ func (h *ProfileHandler) UpdateCompanyProfile(w http.ResponseWriter, r *http.Req
 	}
 
 	res, err := h.client.UpdateCompanyProfile(r.Context(), &profilepb.UpdateCompanyProfileRequest{
-		UserId:           userID,
-		Name:             body.Name,
-		Tagline:          body.Tagline,
-		Description:      body.Description,
-		Industry:         body.Industry,
-		Size:             body.Size,
-		FoundedYear:      body.FoundedYear,
-		Website:          body.Website,
-		ContactEmail:     body.ContactEmail,
-		City:             body.City,
-		Country:          body.Country,
-		IsRemoteFriendly: body.IsRemoteFriendly,
+		UserId: userID, Name: body.Name, Tagline: body.Tagline,
+		Description: body.Description, Industry: body.Industry, Size: body.Size,
+		FoundedYear: body.FoundedYear, Website: body.Website, ContactEmail: body.ContactEmail,
+		City: body.City, Country: body.Country, IsRemoteFriendly: body.IsRemoteFriendly,
 	})
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
@@ -533,7 +512,7 @@ func (h *ProfileHandler) UpdateCompanyProfile(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	proxy.WriteJSON(w, http.StatusOK, res)
+	proxy.WriteJSON(w, http.StatusOK, protoToCompanyDTO(res))
 }
 
 func (h *ProfileHandler) UploadLogo(w http.ResponseWriter, r *http.Request) {
@@ -634,4 +613,76 @@ func (h *ProfileHandler) DeleteLanguage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func protoToStudentDTO(res *profilepb.StudentProfileResponse) *dto.StudentProfileResponse {
+	s := &dto.StudentProfileResponse{
+		ID:           res.Id,
+		UserID:       res.UserId,
+		FirstName:    res.FirstName,
+		LastName:     res.LastName,
+		Phone:        res.Phone,
+		City:         res.City,
+		Bio:          res.Bio,
+		AvatarURL:    res.AvatarUrl,
+		ResumeURL:    res.ResumeUrl,
+		GithubURL:    res.GithubUrl,
+		LinkedinURL:  res.LinkedinUrl,
+		PortfolioURL: res.PortfolioUrl,
+		Educations:   []dto.EducationResponse{},
+		Experiences:  []dto.ExperienceResponse{},
+		Projects:     []dto.ProjectResponse{},
+		Skills:       []dto.SkillResponse{},
+		Languages:    []dto.LanguageResponse{},
+	}
+
+	for _, e := range res.Educations {
+		s.Educations = append(s.Educations, dto.EducationResponse{
+			ID: e.Id, StudentID: e.StudentId, University: e.University,
+			Faculty: e.Faculty, Specialization: e.Specialization, Degree: e.Degree,
+			StartYear: e.StartYear, EndYear: e.EndYear, GPA: e.Gpa, IsCurrent: e.IsCurrent,
+		})
+	}
+
+	for _, e := range res.Experiences {
+		s.Experiences = append(s.Experiences, dto.ExperienceResponse{
+			ID: e.Id, StudentID: e.StudentId, CompanyName: e.CompanyName,
+			Position: e.Position, Description: e.Description,
+			StartDate: e.StartDate, EndDate: e.EndDate,
+			IsCurrent: e.IsCurrent, Format: e.Format,
+		})
+	}
+
+	for _, p := range res.Projects {
+		s.Projects = append(s.Projects, dto.ProjectResponse{
+			ID: p.Id, StudentID: p.StudentId, Title: p.Title,
+			Description: p.Description, URL: p.Url, Techs: p.Techs,
+			StartDate: p.StartDate, EndDate: p.EndDate,
+		})
+	}
+
+	for _, sk := range res.Skills {
+		s.Skills = append(s.Skills, dto.SkillResponse{
+			ID: sk.Id, StudentID: sk.StudentId, Skill: sk.Skill, Level: sk.Level,
+		})
+	}
+
+	for _, l := range res.Languages {
+		s.Languages = append(s.Languages, dto.LanguageResponse{
+			ID: l.Id, StudentID: l.StudentId, Language: l.Language, Level: l.Level,
+		})
+	}
+
+	return s
+}
+
+func protoToCompanyDTO(res *profilepb.CompanyProfileResponse) *dto.CompanyProfileResponse {
+	return &dto.CompanyProfileResponse{
+		ID: res.Id, UserID: res.UserId, Name: res.Name,
+		Tagline: res.Tagline, Description: res.Description,
+		Industry: res.Industry, Size: res.Size, FoundedYear: res.FoundedYear,
+		Website: res.Website, ContactEmail: res.ContactEmail,
+		City: res.City, Country: res.Country,
+		IsRemoteFriendly: res.IsRemoteFriendly, LogoURL: res.LogoUrl,
+	}
 }
