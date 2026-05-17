@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	profilepb "github.com/Kost0/internship-exchange/proto/profile"
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 
@@ -14,11 +16,15 @@ import (
 )
 
 type ListingHandler struct {
-	client listingpb.ListingServiceClient
+	client  listingpb.ListingServiceClient
+	profile profilepb.ProfileServiceClient
 }
 
-func NewListingHandler(conn *grpc.ClientConn) *ListingHandler {
-	return &ListingHandler{client: listingpb.NewListingServiceClient(conn)}
+func NewListingHandler(listingConn, profileConn *grpc.ClientConn) *ListingHandler {
+	return &ListingHandler{
+		client:  listingpb.NewListingServiceClient(listingConn),
+		profile: profilepb.NewProfileServiceClient(profileConn),
+	}
 }
 
 func (h *ListingHandler) GetListings(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +64,8 @@ func (h *ListingHandler) GetListing(w http.ResponseWriter, r *http.Request) {
 func (h *ListingHandler) GetMyListings(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 
+	h.syncCompany(r.Context(), userID)
+
 	res, err := h.client.GetMyListings(r.Context(), &listingpb.GetMyListingsRequest{
 		CompanyId: userID,
 	})
@@ -72,6 +80,8 @@ func (h *ListingHandler) GetMyListings(w http.ResponseWriter, r *http.Request) {
 
 func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
+
+	h.syncCompany(r.Context(), userID)
 
 	var body struct {
 		Title          string `json:"title"`
@@ -90,6 +100,16 @@ func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
 
 		return
+	}
+
+	if body.Format == "" {
+		body.Format = "office"
+	}
+	if body.EmploymentType == "" {
+		body.EmploymentType = "full_time"
+	}
+	if body.SalaryCurrency == "" {
+		body.SalaryCurrency = "RUB"
 	}
 
 	res, err := h.client.CreateListing(r.Context(), &listingpb.CreateListingRequest{
@@ -118,6 +138,8 @@ func (h *ListingHandler) CreateListing(w http.ResponseWriter, r *http.Request) {
 func (h *ListingHandler) UpdateListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 	id := chi.URLParam(r, "id")
+
+	h.syncCompany(r.Context(), userID)
 
 	var body struct {
 		Title          string `json:"title"`
@@ -166,6 +188,8 @@ func (h *ListingHandler) DeleteListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 	id := chi.URLParam(r, "id")
 
+	h.syncCompany(r.Context(), userID)
+
 	_, err := h.client.DeleteListing(r.Context(), &listingpb.DeleteListingRequest{
 		Id:        id,
 		CompanyId: userID,
@@ -182,6 +206,8 @@ func (h *ListingHandler) PublishListing(w http.ResponseWriter, r *http.Request) 
 	userID := middleware.GetUserID(r.Context())
 	id := chi.URLParam(r, "id")
 
+	h.syncCompany(r.Context(), userID)
+
 	res, err := h.client.PublishListing(r.Context(), &listingpb.PublishListingRequest{
 		Id:        id,
 		CompanyId: userID,
@@ -197,6 +223,8 @@ func (h *ListingHandler) PublishListing(w http.ResponseWriter, r *http.Request) 
 func (h *ListingHandler) CloseListing(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r.Context())
 	id := chi.URLParam(r, "id")
+
+	h.syncCompany(r.Context(), userID)
 
 	res, err := h.client.CloseListing(r.Context(), &listingpb.CloseListingRequest{
 		Id:        id,
@@ -222,4 +250,21 @@ func int32QueryParam(s string, fallback int32) int32 {
 	}
 
 	return n
+}
+
+func (h *ListingHandler) syncCompany(ctx context.Context, userID string) {
+	profile, err := h.profile.GetMyCompanyProfile(ctx, &profilepb.GetMyCompanyProfileRequest{
+		UserId: userID,
+	})
+	if err != nil {
+		return
+	}
+
+	_, _ = h.client.SyncCompany(ctx, &listingpb.SyncCompanyRequest{
+		UserId:   userID,
+		Name:     profile.Name,
+		LogoUrl:  profile.LogoUrl,
+		Industry: profile.Industry,
+		City:     profile.City,
+	})
 }

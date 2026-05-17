@@ -114,3 +114,7 @@ func (s *ListingService) CloseListing(ctx context.Context, id, userID string) (*
 
 	return s.listings.SetStatus(ctx, id, company.ID, model.StatusClosed)
 }
+
+func (s *ListingService) SyncCompany(ctx context.Context, userID, name, logo, industry, city string) error {
+	return s.companies.SyncFromProfile(ctx, userID, name, logo, industry, city)
+}

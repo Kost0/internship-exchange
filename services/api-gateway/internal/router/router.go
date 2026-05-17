@@ -38,8 +38,9 @@ func New(cfg *config.Config) http.Handler {
 
 	authHandler := handler.NewAuthHandler(authConn)
 	profileHandler := handler.NewProfileHandler(profileConn)
-	listingHandler := handler.NewListingHandler(listingConn)
+	listingHandler := handler.NewListingHandler(listingConn, profileConn)
 	appHandler := handler.NewApplicationHandler(appConn)
+	fileHandler := handler.NewFileProxyHandler(cfg.MinioAddr)
 
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.Logger)
@@ -47,6 +48,8 @@ func New(cfg *config.Config) http.Handler {
 	r.Options("/*", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	})
+
+	r.Get("/files/{bucket}/{path:.*}", fileHandler.ServePublicFile)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
@@ -92,6 +95,10 @@ func New(cfg *config.Config) http.Handler {
 				r.Delete("/projects/{id}", profileHandler.DeleteProject)
 				r.Get("/{id}", profileHandler.GetStudentProfile)
 				r.Get("/{id}/resume", profileHandler.GetResumeURL)
+				r.Post("/skills", profileHandler.AddSkill)
+				r.Delete("/skills/{id}", profileHandler.DeleteSkill)
+				r.Post("/languages", profileHandler.AddLanguage)
+				r.Delete("/languages/{id}", profileHandler.DeleteLanguage)
 			})
 
 			r.Route("/profile/company", func(r chi.Router) {

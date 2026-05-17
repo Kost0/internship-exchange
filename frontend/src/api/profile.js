@@ -80,4 +80,16 @@ export const profileApi = {
             })
             .then((r) => r.data)
     },
+
+    addSkill: (data) =>
+        apiClient.post('/profile/student/skills', data).then((r) => r.data),
+
+    deleteSkill: (id) =>
+        apiClient.delete(`/profile/student/skills/${id}`),
+
+    addLanguage: (data) =>
+        apiClient.post('/profile/student/languages', data).then((r) => r.data),
+
+    deleteLanguage: (id) =>
+        apiClient.delete(`/profile/student/languages/${id}`),
 }

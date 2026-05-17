@@ -573,3 +573,65 @@ func (h *ProfileHandler) UploadLogo(w http.ResponseWriter, r *http.Request) {
 
 	proxy.WriteJSON(w, http.StatusOK, map[string]string{"logoUrl": res.LogoUrl})
 }
+
+func (h *ProfileHandler) AddSkill(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	var body struct {
+		Skill string `json:"skill"`
+		Level string `json:"level"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	res, err := h.client.AddSkill(r.Context(), &profilepb.AddSkillRequest{
+		UserId: userID, Skill: body.Skill, Level: body.Level,
+	})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+		return
+	}
+	proxy.WriteJSON(w, http.StatusCreated, res)
+}
+
+func (h *ProfileHandler) DeleteSkill(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	id := chi.URLParam(r, "id")
+	_, err := h.client.DeleteSkill(r.Context(), &profilepb.DeleteSkillRequest{Id: id, UserId: userID})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ProfileHandler) AddLanguage(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	var body struct {
+		Language string `json:"language"`
+		Level    string `json:"level"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	res, err := h.client.AddLanguage(r.Context(), &profilepb.AddLanguageRequest{
+		UserId: userID, Language: body.Language, Level: body.Level,
+	})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+		return
+	}
+	proxy.WriteJSON(w, http.StatusCreated, res)
+}
+
+func (h *ProfileHandler) DeleteLanguage(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserID(r.Context())
+	id := chi.URLParam(r, "id")
+	_, err := h.client.DeleteLanguage(r.Context(), &profilepb.DeleteLanguageRequest{Id: id, UserId: userID})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}

@@ -13,6 +13,8 @@ export default function StudentProfile() {
     const [addingEdu, setAddingEdu] = useState(false)
     const [addingExp, setAddingExp] = useState(false)
     const [addingProject, setAddingProject] = useState(false)
+    const [addingSkill, setAddingSkill] = useState(false)
+    const [addingLang, setAddingLang] = useState(false)
 
     const { data: profile, isLoading } = useQuery({
         queryKey: ['student-profile'],
@@ -115,9 +117,7 @@ export default function StudentProfile() {
                                         />
                                     </label>
                                     {profile.resumeUrl && (
-                                        <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 text-center hover:underline">
-                                            Скачать PDF
-                                        </a>
+                                        <ResumeLink studentId={profile.id} />
                                     )}
                                 </div>
                             </div>
@@ -128,7 +128,11 @@ export default function StudentProfile() {
 
             {/* Skills */}
             <div className="bg-white rounded-2xl border border-primary-100 p-6">
-                <h2 className="font-semibold text-gray-900 mb-4">Навыки</h2>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-semibold text-gray-900">Навыки</h2>
+                    <button onClick={() => setAddingSkill(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
+                </div>
+                {addingSkill && <AddSkillForm onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingSkill(false) }} onCancel={() => setAddingSkill(false)} />}
                 <div className="flex flex-wrap gap-2">
                     {profile.skills?.map((s) => (
                         <SkillTag key={s.id} label={`${s.skill} · ${levelLabels[s.level]}`} />
@@ -138,7 +142,11 @@ export default function StudentProfile() {
 
             {/* Languages */}
             <div className="bg-white rounded-2xl border border-primary-100 p-6">
-                <h2 className="font-semibold text-gray-900 mb-4">Языки</h2>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-semibold text-gray-900">Языки</h2>
+                    <button onClick={() => setAddingLang(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
+                </div>
+                {addingLang && <AddLanguageForm onSave={() => { qc.invalidateQueries({ queryKey: ['student-profile'] }); setAddingLang(false) }} onCancel={() => setAddingLang(false)} />}
                 <div className="flex flex-wrap gap-2">
                     {profile.languages?.map((l) => (
                         <SkillTag key={l.id} label={`${l.language} · ${l.level}`} variant="gray" />
@@ -323,5 +331,64 @@ function AddProjectForm({ onSave, onCancel }) {
                 <button type="button" onClick={onCancel} className="btn-secondary text-sm px-4 py-2">Отмена</button>
             </div>
         </form>
+    )
+}
+
+function AddSkillForm({ onSave, onCancel }) {
+    const { register, handleSubmit } = useForm()
+    const mutation = useMutation({ mutationFn: profileApi.addSkill, onSuccess: onSave })
+    return (
+        <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="bg-primary-50 rounded-xl p-4 mb-4 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+                <input {...register('skill', { required: true })} placeholder="Навык *" className="input-base" />
+                <select {...register('level')} className="input-base">
+                    <option value="beginner">Начинающий</option>
+                    <option value="intermediate">Средний</option>
+                    <option value="advanced">Продвинутый</option>
+                </select>
+            </div>
+            <div className="flex gap-2">
+                <button type="submit" className="btn-primary text-sm px-4 py-2">Сохранить</button>
+                <button type="button" onClick={onCancel} className="btn-secondary text-sm px-4 py-2">Отмена</button>
+            </div>
+        </form>
+    )
+}
+
+function AddLanguageForm({ onSave, onCancel }) {
+    const { register, handleSubmit } = useForm()
+    const mutation = useMutation({ mutationFn: profileApi.addLanguage, onSuccess: onSave })
+    return (
+        <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="bg-primary-50 rounded-xl p-4 mb-4 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+                <input {...register('language', { required: true })} placeholder="Язык *" className="input-base" />
+                <select {...register('level')} className="input-base">
+                    <option value="A1">A1</option>
+                    <option value="A2">A2</option>
+                    <option value="B1">B1</option>
+                    <option value="B2">B2</option>
+                    <option value="C1">C1</option>
+                    <option value="C2">C2</option>
+                </select>
+            </div>
+            <div className="flex gap-2">
+                <button type="submit" className="btn-primary text-sm px-4 py-2">Сохранить</button>
+                <button type="button" onClick={onCancel} className="btn-secondary text-sm px-4 py-2">Отмена</button>
+            </div>
+        </form>
+    )
+}
+
+function ResumeLink({ studentId }) {
+    const { data } = useQuery({
+        queryKey: ['resume-link', studentId],
+        queryFn: () => profileApi.getResumeUrl(studentId),
+        enabled: !!studentId,
+    })
+    if (!data?.url) return null
+    return (
+        <a href={data.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 text-center hover:underline">
+            Скачать PDF
+        </a>
     )
 }

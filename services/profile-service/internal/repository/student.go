@@ -604,6 +604,64 @@ func (r *StudentRepository) GetLanguages(ctx context.Context, studentID string) 
 	return result, nil
 }
 
+func (r *StudentRepository) AddSkill(ctx context.Context, studentID string, skill, level string) (*model.StudentSkill, error) {
+	query := `
+        INSERT INTO student_skills (student_id, skill, level)
+        VALUES ($1, $2, $3)
+        RETURNING id, student_id, skill, level
+    `
+	s := &model.StudentSkill{}
+	err := r.db.QueryRow(ctx, query, studentID, skill, level).Scan(&s.ID, &s.StudentID, &s.Skill, &s.Level)
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
+}
+
+func (r *StudentRepository) DeleteSkill(ctx context.Context, id, studentID string) error {
+	query := `DELETE FROM student_skills WHERE id = $1 AND student_id = $2`
+
+	tag, err := r.db.Exec(ctx, query, id, studentID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}
+
+func (r *StudentRepository) AddLanguage(ctx context.Context, studentID string, language, level string) (*model.StudentLanguage, error) {
+	query := `
+        INSERT INTO student_languages (student_id, language, level)
+        VALUES ($1, $2, $3)
+        RETURNING id, student_id, language, level
+    `
+
+	l := &model.StudentLanguage{}
+	err := r.db.QueryRow(ctx, query, studentID, language, level).Scan(&l.ID, &l.StudentID, &l.Language, &l.Level)
+	if err != nil {
+		return nil, err
+	}
+
+	return l, nil
+}
+
+func (r *StudentRepository) DeleteLanguage(ctx context.Context, id, studentID string) error {
+	query := `DELETE FROM student_languages WHERE id = $1 AND student_id = $2`
+	
+	tag, err := r.db.Exec(ctx, query, id, studentID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}
+
 func derefStr(s *string) string {
 	if s == nil {
 		return ""

@@ -28,6 +28,12 @@ service ProfileService {
   rpc GetCompanyProfile(GetCompanyProfileRequest) returns (CompanyProfileResponse);
   rpc UpdateCompanyProfile(UpdateCompanyProfileRequest) returns (CompanyProfileResponse);
   rpc UploadLogo(UploadLogoRequest) returns (UploadLogoResponse);
+
+  rpc AddSkill(AddSkillRequest) returns (SkillResponse);
+  rpc DeleteSkill(DeleteSkillRequest) returns (DeleteResponse);
+
+  rpc AddLanguage(AddLanguageRequest) returns (LanguageResponse);
+  rpc DeleteLanguage(DeleteLanguageRequest) returns (DeleteResponse);
 }
 
 message StudentProfileResponse {
@@ -228,3 +234,17 @@ message UpdateCompanyProfileRequest {
 }
 message UploadLogoRequest  { string user_id = 1; bytes data = 2; string content_type = 3; }
 message UploadLogoResponse { string logo_url = 1; }
+
+message AddSkillRequest {
+  string user_id = 1;
+  string skill   = 2;
+  string level   = 3;
+}
+message DeleteSkillRequest { string id = 1; string user_id = 2; }
+
+message AddLanguageRequest {
+  string user_id  = 1;
+  string language = 2;
+  string level    = 3;
+}
+message DeleteLanguageRequest { string id = 1; string user_id = 2; }

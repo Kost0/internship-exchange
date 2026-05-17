@@ -217,3 +217,11 @@ func listingToProto(l *model.Listing) *listingpb.ListingResponse {
 
 	return resp
 }
+
+func (h *ListingHandler) SyncCompany(ctx context.Context, req *listingpb.SyncCompanyRequest) (*listingpb.SyncCompanyResponse, error) {
+	err := h.svc.SyncCompany(ctx, req.UserId, req.Name, req.LogoUrl, req.Industry, req.City)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &listingpb.SyncCompanyResponse{Success: true}, nil
+}

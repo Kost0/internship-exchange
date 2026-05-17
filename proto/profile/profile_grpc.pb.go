@@ -38,6 +38,10 @@ const (
 	ProfileService_GetCompanyProfile_FullMethodName    = "/profile.ProfileService/GetCompanyProfile"
 	ProfileService_UpdateCompanyProfile_FullMethodName = "/profile.ProfileService/UpdateCompanyProfile"
 	ProfileService_UploadLogo_FullMethodName           = "/profile.ProfileService/UploadLogo"
+	ProfileService_AddSkill_FullMethodName             = "/profile.ProfileService/AddSkill"
+	ProfileService_DeleteSkill_FullMethodName          = "/profile.ProfileService/DeleteSkill"
+	ProfileService_AddLanguage_FullMethodName          = "/profile.ProfileService/AddLanguage"
+	ProfileService_DeleteLanguage_FullMethodName       = "/profile.ProfileService/DeleteLanguage"
 )
 
 // ProfileServiceClient is the client API for ProfileService service.
@@ -63,6 +67,10 @@ type ProfileServiceClient interface {
 	GetCompanyProfile(ctx context.Context, in *GetCompanyProfileRequest, opts ...grpc.CallOption) (*CompanyProfileResponse, error)
 	UpdateCompanyProfile(ctx context.Context, in *UpdateCompanyProfileRequest, opts ...grpc.CallOption) (*CompanyProfileResponse, error)
 	UploadLogo(ctx context.Context, in *UploadLogoRequest, opts ...grpc.CallOption) (*UploadLogoResponse, error)
+	AddSkill(ctx context.Context, in *AddSkillRequest, opts ...grpc.CallOption) (*SkillResponse, error)
+	DeleteSkill(ctx context.Context, in *DeleteSkillRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	AddLanguage(ctx context.Context, in *AddLanguageRequest, opts ...grpc.CallOption) (*LanguageResponse, error)
+	DeleteLanguage(ctx context.Context, in *DeleteLanguageRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type profileServiceClient struct {
@@ -263,6 +271,46 @@ func (c *profileServiceClient) UploadLogo(ctx context.Context, in *UploadLogoReq
 	return out, nil
 }
 
+func (c *profileServiceClient) AddSkill(ctx context.Context, in *AddSkillRequest, opts ...grpc.CallOption) (*SkillResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SkillResponse)
+	err := c.cc.Invoke(ctx, ProfileService_AddSkill_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) DeleteSkill(ctx context.Context, in *DeleteSkillRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteSkill_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) AddLanguage(ctx context.Context, in *AddLanguageRequest, opts ...grpc.CallOption) (*LanguageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LanguageResponse)
+	err := c.cc.Invoke(ctx, ProfileService_AddLanguage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) DeleteLanguage(ctx context.Context, in *DeleteLanguageRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, ProfileService_DeleteLanguage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations must embed UnimplementedProfileServiceServer
 // for forward compatibility.
@@ -286,6 +334,10 @@ type ProfileServiceServer interface {
 	GetCompanyProfile(context.Context, *GetCompanyProfileRequest) (*CompanyProfileResponse, error)
 	UpdateCompanyProfile(context.Context, *UpdateCompanyProfileRequest) (*CompanyProfileResponse, error)
 	UploadLogo(context.Context, *UploadLogoRequest) (*UploadLogoResponse, error)
+	AddSkill(context.Context, *AddSkillRequest) (*SkillResponse, error)
+	DeleteSkill(context.Context, *DeleteSkillRequest) (*DeleteResponse, error)
+	AddLanguage(context.Context, *AddLanguageRequest) (*LanguageResponse, error)
+	DeleteLanguage(context.Context, *DeleteLanguageRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedProfileServiceServer()
 }
 
@@ -352,6 +404,18 @@ func (UnimplementedProfileServiceServer) UpdateCompanyProfile(context.Context, *
 }
 func (UnimplementedProfileServiceServer) UploadLogo(context.Context, *UploadLogoRequest) (*UploadLogoResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UploadLogo not implemented")
+}
+func (UnimplementedProfileServiceServer) AddSkill(context.Context, *AddSkillRequest) (*SkillResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AddSkill not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteSkill(context.Context, *DeleteSkillRequest) (*DeleteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteSkill not implemented")
+}
+func (UnimplementedProfileServiceServer) AddLanguage(context.Context, *AddLanguageRequest) (*LanguageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AddLanguage not implemented")
+}
+func (UnimplementedProfileServiceServer) DeleteLanguage(context.Context, *DeleteLanguageRequest) (*DeleteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteLanguage not implemented")
 }
 func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
 func (UnimplementedProfileServiceServer) testEmbeddedByValue()                        {}
@@ -716,6 +780,78 @@ func _ProfileService_UploadLogo_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_AddSkill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddSkillRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).AddSkill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_AddSkill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).AddSkill(ctx, req.(*AddSkillRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteSkill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSkillRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteSkill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteSkill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteSkill(ctx, req.(*DeleteSkillRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_AddLanguage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddLanguageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).AddLanguage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_AddLanguage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).AddLanguage(ctx, req.(*AddLanguageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_DeleteLanguage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteLanguageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).DeleteLanguage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileService_DeleteLanguage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).DeleteLanguage(ctx, req.(*DeleteLanguageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -798,6 +934,22 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadLogo",
 			Handler:    _ProfileService_UploadLogo_Handler,
+		},
+		{
+			MethodName: "AddSkill",
+			Handler:    _ProfileService_AddSkill_Handler,
+		},
+		{
+			MethodName: "DeleteSkill",
+			Handler:    _ProfileService_DeleteSkill_Handler,
+		},
+		{
+			MethodName: "AddLanguage",
+			Handler:    _ProfileService_AddLanguage_Handler,
+		},
+		{
+			MethodName: "DeleteLanguage",
+			Handler:    _ProfileService_DeleteLanguage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

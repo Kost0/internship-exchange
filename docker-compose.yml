@@ -152,6 +152,7 @@ services:
       PROFILE_SERVICE_ADDR: profile-service:50052
       LISTING_SERVICE_ADDR: listing-service:50053
       APP_SERVICE_ADDR: application-service:50054
+      MINIO_ADDR: minio:9000
     depends_on:
       - auth-service
       - profile-service

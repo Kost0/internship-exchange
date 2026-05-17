@@ -10,9 +10,9 @@ import (
 )
 
 type ProfileService struct {
-	students *repository.StudentRepository
+	students  *repository.StudentRepository
 	companies *repository.CompanyRepository
-	storage  *storage.MinioStorage
+	storage   *storage.MinioStorage
 }
 
 func NewProfileService(
@@ -220,4 +220,40 @@ func (s *ProfileService) loadStudentRelations(ctx context.Context, student *mode
 	}
 
 	return student, nil
+}
+
+func (s *ProfileService) AddSkill(ctx context.Context, userID, skill, level string) (*model.StudentSkill, error) {
+	student, err := s.students.GetOrCreate(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	
+	return s.students.AddSkill(ctx, student.ID, skill, level)
+}
+
+func (s *ProfileService) DeleteSkill(ctx context.Context, id, userID string) error {
+	student, err := s.students.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	return s.students.DeleteSkill(ctx, id, student.ID)
+}
+
+func (s *ProfileService) AddLanguage(ctx context.Context, userID, language, level string) (*model.StudentLanguage, error) {
+	student, err := s.students.GetOrCreate(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.students.AddLanguage(ctx, student.ID, language, level)
+}
+
+func (s *ProfileService) DeleteLanguage(ctx context.Context, id, userID string) error {
+	student, err := s.students.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	return s.students.DeleteLanguage(ctx, id, student.ID)
 }

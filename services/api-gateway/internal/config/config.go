@@ -12,6 +12,7 @@ type Config struct {
 	ProfileServiceAddr string
 	ListingServiceAddr string
 	AppServiceAddr     string
+	MinioAddr          string
 }
 
 func Load() *Config {
@@ -23,6 +24,7 @@ func Load() *Config {
 		ProfileServiceAddr: getEnv("PROFILE_SERVICE_ADDR", "localhost:50052"),
 		ListingServiceAddr: getEnv("LISTING_SERVICE_ADDR", "localhost:50053"),
 		AppServiceAddr:     getEnv("APP_SERVICE_ADDR", "localhost:50054"),
+		MinioAddr:          getEnv("MINIO_ADDR", "localhost:9000"),
 	}
 }
 

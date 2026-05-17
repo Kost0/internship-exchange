@@ -2433,6 +2433,230 @@ func (x *UploadLogoResponse) GetLogoUrl() string {
 	return ""
 }
 
+type AddSkillRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Skill         string                 `protobuf:"bytes,2,opt,name=skill,proto3" json:"skill,omitempty"`
+	Level         string                 `protobuf:"bytes,3,opt,name=level,proto3" json:"level,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddSkillRequest) Reset() {
+	*x = AddSkillRequest{}
+	mi := &file_proto_profile_profile_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddSkillRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddSkillRequest) ProtoMessage() {}
+
+func (x *AddSkillRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_profile_profile_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddSkillRequest.ProtoReflect.Descriptor instead.
+func (*AddSkillRequest) Descriptor() ([]byte, []int) {
+	return file_proto_profile_profile_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *AddSkillRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *AddSkillRequest) GetSkill() string {
+	if x != nil {
+		return x.Skill
+	}
+	return ""
+}
+
+func (x *AddSkillRequest) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+type DeleteSkillRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSkillRequest) Reset() {
+	*x = DeleteSkillRequest{}
+	mi := &file_proto_profile_profile_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSkillRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSkillRequest) ProtoMessage() {}
+
+func (x *DeleteSkillRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_profile_profile_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSkillRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSkillRequest) Descriptor() ([]byte, []int) {
+	return file_proto_profile_profile_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *DeleteSkillRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DeleteSkillRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type AddLanguageRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Language      string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
+	Level         string                 `protobuf:"bytes,3,opt,name=level,proto3" json:"level,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddLanguageRequest) Reset() {
+	*x = AddLanguageRequest{}
+	mi := &file_proto_profile_profile_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddLanguageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddLanguageRequest) ProtoMessage() {}
+
+func (x *AddLanguageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_profile_profile_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddLanguageRequest.ProtoReflect.Descriptor instead.
+func (*AddLanguageRequest) Descriptor() ([]byte, []int) {
+	return file_proto_profile_profile_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *AddLanguageRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *AddLanguageRequest) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *AddLanguageRequest) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+type DeleteLanguageRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteLanguageRequest) Reset() {
+	*x = DeleteLanguageRequest{}
+	mi := &file_proto_profile_profile_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteLanguageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteLanguageRequest) ProtoMessage() {}
+
+func (x *DeleteLanguageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_profile_profile_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteLanguageRequest.ProtoReflect.Descriptor instead.
+func (*DeleteLanguageRequest) Descriptor() ([]byte, []int) {
+	return file_proto_profile_profile_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *DeleteLanguageRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DeleteLanguageRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
 var File_proto_profile_profile_proto protoreflect.FileDescriptor
 
 const file_proto_profile_profile_proto_rawDesc = "" +
@@ -2672,7 +2896,21 @@ const file_proto_profile_profile_proto_rawDesc = "" +
 	"\x04data\x18\x02 \x01(\fR\x04data\x12!\n" +
 	"\fcontent_type\x18\x03 \x01(\tR\vcontentType\"/\n" +
 	"\x12UploadLogoResponse\x12\x19\n" +
-	"\blogo_url\x18\x01 \x01(\tR\alogoUrl2\x95\f\n" +
+	"\blogo_url\x18\x01 \x01(\tR\alogoUrl\"V\n" +
+	"\x0fAddSkillRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
+	"\x05skill\x18\x02 \x01(\tR\x05skill\x12\x14\n" +
+	"\x05level\x18\x03 \x01(\tR\x05level\"=\n" +
+	"\x12DeleteSkillRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\"_\n" +
+	"\x12AddLanguageRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
+	"\blanguage\x18\x02 \x01(\tR\blanguage\x12\x14\n" +
+	"\x05level\x18\x03 \x01(\tR\x05level\"@\n" +
+	"\x15DeleteLanguageRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId2\xaa\x0e\n" +
 	"\x0eProfileService\x12[\n" +
 	"\x13GetMyStudentProfile\x12#.profile.GetMyStudentProfileRequest\x1a\x1f.profile.StudentProfileResponse\x12W\n" +
 	"\x11GetStudentProfile\x12!.profile.GetStudentProfileRequest\x1a\x1f.profile.StudentProfileResponse\x12]\n" +
@@ -2694,7 +2932,11 @@ const file_proto_profile_profile_proto_rawDesc = "" +
 	"\x11GetCompanyProfile\x12!.profile.GetCompanyProfileRequest\x1a\x1f.profile.CompanyProfileResponse\x12]\n" +
 	"\x14UpdateCompanyProfile\x12$.profile.UpdateCompanyProfileRequest\x1a\x1f.profile.CompanyProfileResponse\x12E\n" +
 	"\n" +
-	"UploadLogo\x12\x1a.profile.UploadLogoRequest\x1a\x1b.profile.UploadLogoResponseB4Z2github.com/Kost0/internship-exchange/proto/profileb\x06proto3"
+	"UploadLogo\x12\x1a.profile.UploadLogoRequest\x1a\x1b.profile.UploadLogoResponse\x12<\n" +
+	"\bAddSkill\x12\x18.profile.AddSkillRequest\x1a\x16.profile.SkillResponse\x12C\n" +
+	"\vDeleteSkill\x12\x1b.profile.DeleteSkillRequest\x1a\x17.profile.DeleteResponse\x12E\n" +
+	"\vAddLanguage\x12\x1b.profile.AddLanguageRequest\x1a\x19.profile.LanguageResponse\x12I\n" +
+	"\x0eDeleteLanguage\x12\x1e.profile.DeleteLanguageRequest\x1a\x17.profile.DeleteResponseB4Z2github.com/Kost0/internship-exchange/proto/profileb\x06proto3"
 
 var (
 	file_proto_profile_profile_proto_rawDescOnce sync.Once
@@ -2708,7 +2950,7 @@ func file_proto_profile_profile_proto_rawDescGZIP() []byte {
 	return file_proto_profile_profile_proto_rawDescData
 }
 
-var file_proto_profile_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_proto_profile_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_proto_profile_profile_proto_goTypes = []any{
 	(*StudentProfileResponse)(nil),      // 0: profile.StudentProfileResponse
 	(*EducationResponse)(nil),           // 1: profile.EducationResponse
@@ -2741,6 +2983,10 @@ var file_proto_profile_profile_proto_goTypes = []any{
 	(*UpdateCompanyProfileRequest)(nil), // 28: profile.UpdateCompanyProfileRequest
 	(*UploadLogoRequest)(nil),           // 29: profile.UploadLogoRequest
 	(*UploadLogoResponse)(nil),          // 30: profile.UploadLogoResponse
+	(*AddSkillRequest)(nil),             // 31: profile.AddSkillRequest
+	(*DeleteSkillRequest)(nil),          // 32: profile.DeleteSkillRequest
+	(*AddLanguageRequest)(nil),          // 33: profile.AddLanguageRequest
+	(*DeleteLanguageRequest)(nil),       // 34: profile.DeleteLanguageRequest
 }
 var file_proto_profile_profile_proto_depIdxs = []int32{
 	1,  // 0: profile.StudentProfileResponse.educations:type_name -> profile.EducationResponse
@@ -2767,27 +3013,35 @@ var file_proto_profile_profile_proto_depIdxs = []int32{
 	27, // 21: profile.ProfileService.GetCompanyProfile:input_type -> profile.GetCompanyProfileRequest
 	28, // 22: profile.ProfileService.UpdateCompanyProfile:input_type -> profile.UpdateCompanyProfileRequest
 	29, // 23: profile.ProfileService.UploadLogo:input_type -> profile.UploadLogoRequest
-	0,  // 24: profile.ProfileService.GetMyStudentProfile:output_type -> profile.StudentProfileResponse
-	0,  // 25: profile.ProfileService.GetStudentProfile:output_type -> profile.StudentProfileResponse
-	0,  // 26: profile.ProfileService.UpdateStudentProfile:output_type -> profile.StudentProfileResponse
-	11, // 27: profile.ProfileService.UploadAvatar:output_type -> profile.UploadAvatarResponse
-	13, // 28: profile.ProfileService.UploadResume:output_type -> profile.UploadResumeResponse
-	15, // 29: profile.ProfileService.GetResumeURL:output_type -> profile.GetResumeURLResponse
-	1,  // 30: profile.ProfileService.AddEducation:output_type -> profile.EducationResponse
-	1,  // 31: profile.ProfileService.UpdateEducation:output_type -> profile.EducationResponse
-	25, // 32: profile.ProfileService.DeleteEducation:output_type -> profile.DeleteResponse
-	2,  // 33: profile.ProfileService.AddExperience:output_type -> profile.ExperienceResponse
-	2,  // 34: profile.ProfileService.UpdateExperience:output_type -> profile.ExperienceResponse
-	25, // 35: profile.ProfileService.DeleteExperience:output_type -> profile.DeleteResponse
-	3,  // 36: profile.ProfileService.AddProject:output_type -> profile.ProjectResponse
-	3,  // 37: profile.ProfileService.UpdateProject:output_type -> profile.ProjectResponse
-	25, // 38: profile.ProfileService.DeleteProject:output_type -> profile.DeleteResponse
-	6,  // 39: profile.ProfileService.GetMyCompanyProfile:output_type -> profile.CompanyProfileResponse
-	6,  // 40: profile.ProfileService.GetCompanyProfile:output_type -> profile.CompanyProfileResponse
-	6,  // 41: profile.ProfileService.UpdateCompanyProfile:output_type -> profile.CompanyProfileResponse
-	30, // 42: profile.ProfileService.UploadLogo:output_type -> profile.UploadLogoResponse
-	24, // [24:43] is the sub-list for method output_type
-	5,  // [5:24] is the sub-list for method input_type
+	31, // 24: profile.ProfileService.AddSkill:input_type -> profile.AddSkillRequest
+	32, // 25: profile.ProfileService.DeleteSkill:input_type -> profile.DeleteSkillRequest
+	33, // 26: profile.ProfileService.AddLanguage:input_type -> profile.AddLanguageRequest
+	34, // 27: profile.ProfileService.DeleteLanguage:input_type -> profile.DeleteLanguageRequest
+	0,  // 28: profile.ProfileService.GetMyStudentProfile:output_type -> profile.StudentProfileResponse
+	0,  // 29: profile.ProfileService.GetStudentProfile:output_type -> profile.StudentProfileResponse
+	0,  // 30: profile.ProfileService.UpdateStudentProfile:output_type -> profile.StudentProfileResponse
+	11, // 31: profile.ProfileService.UploadAvatar:output_type -> profile.UploadAvatarResponse
+	13, // 32: profile.ProfileService.UploadResume:output_type -> profile.UploadResumeResponse
+	15, // 33: profile.ProfileService.GetResumeURL:output_type -> profile.GetResumeURLResponse
+	1,  // 34: profile.ProfileService.AddEducation:output_type -> profile.EducationResponse
+	1,  // 35: profile.ProfileService.UpdateEducation:output_type -> profile.EducationResponse
+	25, // 36: profile.ProfileService.DeleteEducation:output_type -> profile.DeleteResponse
+	2,  // 37: profile.ProfileService.AddExperience:output_type -> profile.ExperienceResponse
+	2,  // 38: profile.ProfileService.UpdateExperience:output_type -> profile.ExperienceResponse
+	25, // 39: profile.ProfileService.DeleteExperience:output_type -> profile.DeleteResponse
+	3,  // 40: profile.ProfileService.AddProject:output_type -> profile.ProjectResponse
+	3,  // 41: profile.ProfileService.UpdateProject:output_type -> profile.ProjectResponse
+	25, // 42: profile.ProfileService.DeleteProject:output_type -> profile.DeleteResponse
+	6,  // 43: profile.ProfileService.GetMyCompanyProfile:output_type -> profile.CompanyProfileResponse
+	6,  // 44: profile.ProfileService.GetCompanyProfile:output_type -> profile.CompanyProfileResponse
+	6,  // 45: profile.ProfileService.UpdateCompanyProfile:output_type -> profile.CompanyProfileResponse
+	30, // 46: profile.ProfileService.UploadLogo:output_type -> profile.UploadLogoResponse
+	4,  // 47: profile.ProfileService.AddSkill:output_type -> profile.SkillResponse
+	25, // 48: profile.ProfileService.DeleteSkill:output_type -> profile.DeleteResponse
+	5,  // 49: profile.ProfileService.AddLanguage:output_type -> profile.LanguageResponse
+	25, // 50: profile.ProfileService.DeleteLanguage:output_type -> profile.DeleteResponse
+	28, // [28:51] is the sub-list for method output_type
+	5,  // [5:28] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -2804,7 +3058,7 @@ func file_proto_profile_profile_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_profile_profile_proto_rawDesc), len(file_proto_profile_profile_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   31,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

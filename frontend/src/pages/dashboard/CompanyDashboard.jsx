@@ -11,12 +11,12 @@ export default function CompanyDashboard() {
     const [selectedListingId, setSelectedListingId] = useState(null)
     const [creatingListing, setCreatingListing] = useState(false)
 
-    const { data: listings, isLoading } = useQuery({
+    const { data: listings = [], isLoading } = useQuery({
         queryKey: ['my-listings'],
         queryFn: listingsApi.getMyListings,
     })
 
-    const { data: applications } = useQuery({
+    const { data: applications = [] } = useQuery({
         queryKey: ['listing-applications', selectedListingId],
         queryFn: () => applicationsApi.getListingApplications(selectedListingId),
         enabled: !!selectedListingId,
@@ -78,10 +78,10 @@ export default function CompanyDashboard() {
                                 <div key={i} className="h-20 bg-white rounded-2xl" />
                             ))}
                         </div>
-                    ) : listings?.length === 0 ? (
+                    ) : !Array.isArray(listings) || listings.length === 0 ? (
                         <p className="text-sm text-gray-400 py-4">Нет вакансий. Создайте первую!</p>
                     ) : (
-                        listings?.map((listing) => (
+                        listings.map((listing) => (
                             <div
                                 key={listing.id}
                                 onClick={() => setSelectedListingId(listing.id)}
@@ -94,8 +94,8 @@ export default function CompanyDashboard() {
                                 <div className="flex items-start justify-between mb-1">
                                     <p className="font-medium text-gray-900 text-sm leading-tight">{listing.title}</p>
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[listing.status]}`}>
-                    {statusLabels[listing.status]}
-                  </span>
+                                        {statusLabels[listing.status]}
+                                    </span>
                                 </div>
                                 <p className="text-xs text-gray-400 mb-2">
                                     {listing.deadline && `до ${new Date(listing.deadline).toLocaleDateString('ru')}`}
@@ -137,7 +137,7 @@ export default function CompanyDashboard() {
                     ) : (
                         <div className="space-y-3">
                             <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wide">Отклики</h2>
-                            {!applications?.length ? (
+                            {!Array.isArray(applications) || applications.length === 0 ? (
                                 <div className="bg-white rounded-2xl border border-primary-100 p-10 text-center">
                                     <p className="text-gray-400 text-sm">Нет откликов</p>
                                 </div>
@@ -155,9 +155,10 @@ export default function CompanyDashboard() {
                                         </div>
 
                                         <div className="flex flex-wrap gap-1.5">
-                                            {app.student?.skills?.slice(0, 4).map((s) => (
-                                                <SkillTag key={s.id} label={s.skill} />
-                                            ))}
+                                            {Array.isArray(app.student?.skills) &&
+                                                app.student.skills.slice(0, 4).map((s) => (
+                                                    <SkillTag key={s.id} label={s.skill} />
+                                                ))}
                                         </div>
 
                                         {app.coverLetter && (
@@ -173,7 +174,7 @@ export default function CompanyDashboard() {
                                                 rel="noopener noreferrer"
                                                 className="inline-block mt-2 text-xs text-primary-600 hover:underline"
                                             >
-                                                📎 Скачать резюме
+                                                Скачать резюме
                                             </a>
                                         )}
 

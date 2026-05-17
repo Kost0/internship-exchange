@@ -13,6 +13,7 @@ service ListingService {
   rpc DeleteListing(DeleteListingRequest) returns (DeleteListingResponse);
   rpc PublishListing(PublishListingRequest) returns (ListingResponse);
   rpc CloseListing(CloseListingRequest) returns (ListingResponse);
+  rpc SyncCompany(SyncCompanyRequest) returns (SyncCompanyResponse);
 }
 
 message ListingSkill {
@@ -110,3 +111,12 @@ message DeleteListingRequest  { string id = 1; string company_id = 2; }
 message DeleteListingResponse { bool success = 1; }
 message PublishListingRequest { string id = 1; string company_id = 2; }
 message CloseListingRequest   { string id = 1; string company_id = 2; }
+
+message SyncCompanyRequest {
+  string user_id = 1;
+  string name = 2;
+  string logo_url = 3;
+  string industry = 4;
+  string city = 5;
+}
+message SyncCompanyResponse { bool success = 1; }

@@ -208,11 +208,16 @@ func (h *ProfileHandler) DeleteExperience(ctx context.Context, req *profilepb.De
 }
 
 func (h *ProfileHandler) AddProject(ctx context.Context, req *profilepb.AddProjectRequest) (*profilepb.ProjectResponse, error) {
+	techs := req.Techs
+	if techs == nil {
+		techs = []string{}
+	}
+
 	proj := model.Project{
 		Title:       req.Title,
 		Description: req.Description,
 		URL:         req.Url,
-		Techs:       req.Techs,
+		Techs:       techs,
 		StartDate:   req.StartDate,
 		EndDate:     req.EndDate,
 	}
@@ -226,11 +231,16 @@ func (h *ProfileHandler) AddProject(ctx context.Context, req *profilepb.AddProje
 }
 
 func (h *ProfileHandler) UpdateProject(ctx context.Context, req *profilepb.UpdateProjectRequest) (*profilepb.ProjectResponse, error) {
+	techs := req.Techs
+	if techs == nil {
+		techs = []string{}
+	}
+
 	proj := model.Project{
 		Title:       req.Title,
 		Description: req.Description,
 		URL:         req.Url,
-		Techs:       req.Techs,
+		Techs:       techs,
 		StartDate:   req.StartDate,
 		EndDate:     req.EndDate,
 	}
@@ -311,6 +321,46 @@ func (h *ProfileHandler) UploadLogo(ctx context.Context, req *profilepb.UploadLo
 	}
 
 	return &profilepb.UploadLogoResponse{LogoUrl: url}, nil
+}
+
+func (h *ProfileHandler) AddSkill(ctx context.Context, req *profilepb.AddSkillRequest) (*profilepb.SkillResponse, error) {
+	skill, err := h.svc.AddSkill(ctx, req.UserId, req.Skill, req.Level)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &profilepb.SkillResponse{
+		Id: skill.ID, StudentId: skill.StudentID, Skill: skill.Skill, Level: skill.Level,
+	}, nil
+}
+
+func (h *ProfileHandler) DeleteSkill(ctx context.Context, req *profilepb.DeleteSkillRequest) (*profilepb.DeleteResponse, error) {
+	if err := h.svc.DeleteSkill(ctx, req.Id, req.UserId); err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, status.Error(codes.NotFound, "skill not found")
+		}
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &profilepb.DeleteResponse{Success: true}, nil
+}
+
+func (h *ProfileHandler) AddLanguage(ctx context.Context, req *profilepb.AddLanguageRequest) (*profilepb.LanguageResponse, error) {
+	lang, err := h.svc.AddLanguage(ctx, req.UserId, req.Language, req.Level)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &profilepb.LanguageResponse{
+		Id: lang.ID, StudentId: lang.StudentID, Language: lang.Language, Level: lang.Level,
+	}, nil
+}
+
+func (h *ProfileHandler) DeleteLanguage(ctx context.Context, req *profilepb.DeleteLanguageRequest) (*profilepb.DeleteResponse, error) {
+	if err := h.svc.DeleteLanguage(ctx, req.Id, req.UserId); err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, status.Error(codes.NotFound, "language not found")
+		}
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &profilepb.DeleteResponse{Success: true}, nil
 }
 
 func studentToProto(s *model.Student) *profilepb.StudentProfileResponse {

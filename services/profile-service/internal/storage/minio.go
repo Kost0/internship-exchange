@@ -59,7 +59,7 @@ func (s *MinioStorage) UploadAvatar(ctx context.Context, userID string, data []b
 		return "", err
 	}
 
-	return fmt.Sprintf("/%s/%s", s.publicBucket, objectName), nil
+	return fmt.Sprintf("/files/%s/%s", s.publicBucket, objectName), nil
 }
 
 func (s *MinioStorage) UploadResume(ctx context.Context, userID string, data []byte) (string, error) {
@@ -72,7 +72,7 @@ func (s *MinioStorage) UploadResume(ctx context.Context, userID string, data []b
 		return "", err
 	}
 
-	return fmt.Sprintf("/%s/%s", s.privateBucket, objectName), nil
+	return fmt.Sprintf("/files/%s/%s", s.privateBucket, objectName), nil
 }
 
 func (s *MinioStorage) GetResumePresignedURL(ctx context.Context, studentID string) (string, error) {
@@ -95,5 +95,5 @@ func (s *MinioStorage) UploadLogo(ctx context.Context, userID string, data []byt
 		return "", err
 	}
 
-	return fmt.Sprintf("/logos/%s", objectName), nil
+	return fmt.Sprintf("/files/logos/%s", objectName), nil
 }
