@@ -42,7 +42,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, studentID, listingID
 		if isUniqueViolation(err) {
 			return nil, ErrConflict
 		}
-		
+
 		return nil, err
 	}
 
@@ -190,15 +190,18 @@ func (r *ApplicationRepository) AddEvent(ctx context.Context, applicationID stri
 	`
 
 	event := &model.ApplicationEvent{}
+	var dbComment *string
+
 	err := r.db.QueryRow(ctx, query, applicationID, oldStatus, newStatus, nilIfEmpty(comment)).Scan(
 		&event.ID, &event.ApplicationID,
 		&event.OldStatus, &event.NewStatus,
-		&event.Comment, &event.ChangedAt,
+		&dbComment, &event.ChangedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
 
+	event.Comment = derefStr(dbComment)
 	return event, nil
 }
 
@@ -219,15 +222,17 @@ func (r *ApplicationRepository) GetEvents(ctx context.Context, applicationID str
 	var events []model.ApplicationEvent
 	for rows.Next() {
 		e := model.ApplicationEvent{}
+		var dbComment *string
 
 		if err := rows.Scan(
 			&e.ID, &e.ApplicationID,
 			&e.OldStatus, &e.NewStatus,
-			&e.Comment, &e.ChangedAt,
+			&dbComment, &e.ChangedAt,
 		); err != nil {
 			return nil, err
 		}
 
+		e.Comment = derefStr(dbComment)
 		events = append(events, e)
 	}
 
@@ -260,15 +265,17 @@ func (r *ApplicationRepository) LoadEvents(ctx context.Context, apps []model.App
 	eventsMap := make(map[string][]model.ApplicationEvent)
 	for rows.Next() {
 		e := model.ApplicationEvent{}
+		var dbComment *string
 
 		if err := rows.Scan(
 			&e.ID, &e.ApplicationID,
 			&e.OldStatus, &e.NewStatus,
-			&e.Comment, &e.ChangedAt,
+			&dbComment, &e.ChangedAt,
 		); err != nil {
 			return err
 		}
 
+		e.Comment = derefStr(dbComment)
 		eventsMap[e.ApplicationID] = append(eventsMap[e.ApplicationID], e)
 	}
 
@@ -301,4 +308,11 @@ func nilIfEmpty(s string) any {
 	}
 
 	return s
+}
+
+func derefStr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }

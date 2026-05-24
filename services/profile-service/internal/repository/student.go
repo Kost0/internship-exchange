@@ -332,7 +332,7 @@ func (r *StudentRepository) DeleteEducation(ctx context.Context, id, studentID s
 func (r *StudentRepository) GetExperiences(ctx context.Context, studentID string) ([]model.Experience, error) {
 	query := `
 		SELECT id, student_id, company_name, position, description,
-		       start_date, end_date, is_current, format
+		       start_date::text, end_date::text, is_current, format
 		FROM experiences
 		WHERE student_id = $1
 		ORDER BY start_date DESC NULLS LAST
@@ -371,7 +371,7 @@ func (r *StudentRepository) AddExperience(ctx context.Context, studentID string,
 	query := `
 		INSERT INTO experiences (student_id, company_name, position, description, start_date, end_date, is_current, format)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id, student_id, company_name, position, description, start_date, end_date, is_current, format
+		RETURNING id, student_id, company_name, position, description, start_date::text, end_date::text, is_current, format
 	`
 
 	result := &model.Experience{}
@@ -403,7 +403,7 @@ func (r *StudentRepository) UpdateExperience(ctx context.Context, id, studentID 
 		SET company_name = $1, position = $2, description = $3,
 		    start_date = $4, end_date = $5, is_current = $6, format = $7
 		WHERE id = $8 AND student_id = $9
-		RETURNING id, student_id, company_name, position, description, start_date, end_date, is_current, format
+		RETURNING id, student_id, company_name, position, description, start_date::text, end_date::text, is_current, format
 	`
 
 	result := &model.Experience{}
@@ -447,7 +447,7 @@ func (r *StudentRepository) DeleteExperience(ctx context.Context, id, studentID 
 
 func (r *StudentRepository) GetProjects(ctx context.Context, studentID string) ([]model.Project, error) {
 	query := `
-		SELECT id, student_id, title, description, url, techs, start_date, end_date
+		SELECT id, student_id, title, description, url, techs, start_date::text, end_date::text
 		FROM projects
 		WHERE student_id = $1
 		ORDER BY created_at DESC
@@ -487,7 +487,7 @@ func (r *StudentRepository) AddProject(ctx context.Context, studentID string, p 
 	query := `
 		INSERT INTO projects (student_id, title, description, url, techs, start_date, end_date)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		RETURNING id, student_id, title, description, url, techs, start_date, end_date
+		RETURNING id, student_id, title, description, url, techs, start_date::text, end_date::text
 	`
 
 	result := &model.Project{}
@@ -520,7 +520,7 @@ func (r *StudentRepository) UpdateProject(ctx context.Context, id, studentID str
 		UPDATE projects
 		SET title = $1, description = $2, url = $3, techs = $4, start_date = $5, end_date = $6
 		WHERE id = $7 AND student_id = $8
-		RETURNING id, student_id, title, description, url, techs, start_date, end_date
+		RETURNING id, student_id, title, description, url, techs, start_date::text, end_date::text
 	`
 
 	result := &model.Project{}
@@ -650,7 +650,7 @@ func (r *StudentRepository) AddLanguage(ctx context.Context, studentID string, l
 
 func (r *StudentRepository) DeleteLanguage(ctx context.Context, id, studentID string) error {
 	query := `DELETE FROM student_languages WHERE id = $1 AND student_id = $2`
-	
+
 	tag, err := r.db.Exec(ctx, query, id, studentID)
 	if err != nil {
 		return err

@@ -29,6 +29,7 @@ message CompanyInfo {
   string logo_url = 3;
   string industry = 4;
   string city    = 5;
+  string user_id = 6;
 }
 
 message ListingResponse {

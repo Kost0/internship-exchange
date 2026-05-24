@@ -264,9 +264,13 @@ func protoToListingDTO(l *listingpb.ListingResponse) dto.ListingResponse {
 
 	if l.Company != nil {
 		res.Company = &dto.CompanyInfoResponse{
-			ID: l.Company.Id, Name: l.Company.Name,
-			LogoURL: l.Company.LogoUrl, Industry: l.Company.Industry,
-			City: l.Company.City,
+			ID:     l.Company.Id,
+			UserID: l.Company.UserID,
+			Name:   l.Company.Name,
+
+			LogoURL:  l.Company.LogoUrl,
+			Industry: l.Company.Industry,
+			City:     l.Company.City,
 		}
 	}
 

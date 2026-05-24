@@ -75,16 +75,20 @@ func (r *ListingRepository) GetAll(ctx context.Context, f model.ListingsFilter) 
 	offset := (f.Page - 1) * f.Limit
 
 	listingsQuery := fmt.Sprintf(`
-		SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
-		       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
-		       l.deadline, l.status, l.created_at, l.updated_at,
-		       c.id, c.name, c.logo_url, c.industry, c.city
-		FROM listings l
-		JOIN companies c ON c.id = l.company_id
-		%s
-		ORDER BY l.created_at DESC
-		LIMIT $%d OFFSET $%d
-	`, where, idx, idx+1)
+	SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
+	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
+	       l.deadline::text, l.status, l.created_at, l.updated_at,
+	       c.id,
+	       COALESCE(c.name, ''),
+	       COALESCE(c.logo_url, ''),
+	       COALESCE(c.industry, ''),
+	       COALESCE(c.city, '')
+	FROM listings l
+	JOIN companies c ON c.id = l.company_id
+	%s
+	ORDER BY l.created_at DESC
+	LIMIT $%d OFFSET $%d
+`, where, idx, idx+1)
 
 	args = append(args, f.Limit, offset)
 
@@ -114,13 +118,17 @@ func (r *ListingRepository) GetAll(ctx context.Context, f model.ListingsFilter) 
 
 func (r *ListingRepository) GetByID(ctx context.Context, id string) (*model.Listing, error) {
 	query := `
-		SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
-		       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
-		       l.deadline, l.status, l.created_at, l.updated_at,
-		       c.id, c.name, c.logo_url, c.industry, c.city
-		FROM listings l
-		JOIN companies c ON c.id = l.company_id
-		WHERE l.id = $1
+	SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
+	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
+	       l.deadline::text, l.status, l.created_at, l.updated_at,
+	       c.id,
+	       COALESCE(c.name, ''),
+	       COALESCE(c.logo_url, ''),
+	       COALESCE(c.industry, ''),
+	       COALESCE(c.city, '')
+	FROM listings l
+	JOIN companies c ON c.id = l.company_id
+	WHERE l.id = $1
 	`
 
 	row := r.db.QueryRow(ctx, query, id)
@@ -145,15 +153,19 @@ func (r *ListingRepository) GetByID(ctx context.Context, id string) (*model.List
 
 func (r *ListingRepository) GetByCompanyID(ctx context.Context, companyID string) ([]model.Listing, error) {
 	query := `
-		SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
-		       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
-		       l.deadline, l.status, l.created_at, l.updated_at,
-		       c.id, c.name, c.logo_url, c.industry, c.city
-		FROM listings l
-		JOIN companies c ON c.id = l.company_id
-		WHERE l.company_id = $1
-		ORDER BY l.created_at DESC
-	`
+	SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
+	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
+	       l.deadline::text, l.status, l.created_at, l.updated_at,
+	       c.id,
+	       COALESCE(c.name, ''),
+	       COALESCE(c.logo_url, ''),
+	       COALESCE(c.industry, ''),
+	       COALESCE(c.city, '')
+	FROM listings l
+	JOIN companies c ON c.id = l.company_id
+	WHERE l.company_id = $1
+	ORDER BY l.created_at DESC
+`
 
 	rows, err := r.db.Query(ctx, query, companyID)
 	if err != nil {
@@ -187,25 +199,39 @@ func (r *ListingRepository) Create(ctx context.Context, l model.Listing) (*model
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING id, company_id, title, description, requirements, what_we_offer,
 		          city, format, employment_type, salary_from, salary_to, salary_currency,
-		          deadline, status, created_at, updated_at
+		          deadline::text, status, created_at, updated_at
 	`
 
 	result := &model.Listing{}
+
+	var city *string
+	var salaryFrom *int64
+	var salaryTo *int64
+	var salaryCurrency *string
+	var deadline *string
+
 	err := r.db.QueryRow(ctx, query,
 		l.CompanyID, l.Title, l.Description, l.Requirements, l.WhatWeOffer,
 		nilIfEmpty(l.City), l.Format, l.EmploymentType,
 		nullIfZeroInt(l.SalaryFrom), nullIfZeroInt(l.SalaryTo),
-		l.SalaryCurrency, nilIfEmpty(l.Deadline),
+		nilIfEmpty(l.SalaryCurrency), nilIfEmpty(l.Deadline),
 	).Scan(
 		&result.ID, &result.CompanyID, &result.Title, &result.Description,
-		&result.Requirements, &result.WhatWeOffer, &result.City, &result.Format,
-		&result.EmploymentType, &result.SalaryFrom, &result.SalaryTo,
-		&result.SalaryCurrency, &result.Deadline, &result.Status,
+		&result.Requirements, &result.WhatWeOffer,
+		&city, &result.Format, &result.EmploymentType,
+		&salaryFrom, &salaryTo, &salaryCurrency,
+		&deadline, &result.Status,
 		&result.CreatedAt, &result.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	result.City = derefStr(city)
+	result.SalaryFrom = derefInt64(salaryFrom)
+	result.SalaryTo = derefInt64(salaryTo)
+	result.SalaryCurrency = derefStr(salaryCurrency)
+	result.Deadline = derefStr(deadline)
 
 	return result, nil
 }
@@ -228,34 +254,46 @@ func (r *ListingRepository) Update(ctx context.Context, id, companyID string, l 
 		WHERE id = $12 AND company_id = $13 AND status = 'draft'
 		RETURNING id, company_id, title, description, requirements, what_we_offer,
 		          city, format, employment_type, salary_from, salary_to, salary_currency,
-		          deadline, status, created_at, updated_at
+		          deadline::text, status, created_at, updated_at
 	`
 
 	result := &model.Listing{}
+
+	var city *string
+	var salaryFrom *int64
+	var salaryTo *int64
+	var salaryCurrency *string
+	var deadline *string
+
 	err := r.db.QueryRow(ctx, query,
 		l.Title, l.Description, l.Requirements, l.WhatWeOffer,
 		nilIfEmpty(l.City), l.Format, l.EmploymentType,
 		nullIfZeroInt(l.SalaryFrom), nullIfZeroInt(l.SalaryTo),
-		l.SalaryCurrency, nilIfEmpty(l.Deadline),
+		nilIfEmpty(l.SalaryCurrency), nilIfEmpty(l.Deadline),
 		id, companyID,
 	).Scan(
 		&result.ID, &result.CompanyID, &result.Title, &result.Description,
-		&result.Requirements, &result.WhatWeOffer, &result.City, &result.Format,
-		&result.EmploymentType, &result.SalaryFrom, &result.SalaryTo,
-		&result.SalaryCurrency, &result.Deadline, &result.Status,
+		&result.Requirements, &result.WhatWeOffer,
+		&city, &result.Format, &result.EmploymentType,
+		&salaryFrom, &salaryTo, &salaryCurrency,
+		&deadline, &result.Status,
 		&result.CreatedAt, &result.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound
 		}
-
 		return nil, err
 	}
 
+	result.City = derefStr(city)
+	result.SalaryFrom = derefInt64(salaryFrom)
+	result.SalaryTo = derefInt64(salaryTo)
+	result.SalaryCurrency = derefStr(salaryCurrency)
+	result.Deadline = derefStr(deadline)
+
 	return result, nil
 }
-
 func (r *ListingRepository) Delete(ctx context.Context, id, companyID string) error {
 	query := `DELETE FROM listings WHERE id = $1 AND company_id = $2 AND status = 'draft'`
 	tag, err := r.db.Exec(ctx, query, id, companyID)
@@ -277,24 +315,37 @@ func (r *ListingRepository) SetStatus(ctx context.Context, id, companyID string,
 		WHERE id = $2 AND company_id = $3
 		RETURNING id, company_id, title, description, requirements, what_we_offer,
 		          city, format, employment_type, salary_from, salary_to, salary_currency,
-		          deadline, status, created_at, updated_at
+		          deadline::text, status, created_at, updated_at
 	`
 
 	result := &model.Listing{}
+
+	var city *string
+	var salaryFrom *int64
+	var salaryTo *int64
+	var salaryCurrency *string
+	var deadline *string
+
 	err := r.db.QueryRow(ctx, query, status, id, companyID).Scan(
 		&result.ID, &result.CompanyID, &result.Title, &result.Description,
-		&result.Requirements, &result.WhatWeOffer, &result.City, &result.Format,
-		&result.EmploymentType, &result.SalaryFrom, &result.SalaryTo,
-		&result.SalaryCurrency, &result.Deadline, &result.Status,
+		&result.Requirements, &result.WhatWeOffer,
+		&city, &result.Format, &result.EmploymentType,
+		&salaryFrom, &salaryTo, &salaryCurrency,
+		&deadline, &result.Status,
 		&result.CreatedAt, &result.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound
 		}
-
 		return nil, err
 	}
+
+	result.City = derefStr(city)
+	result.SalaryFrom = derefInt64(salaryFrom)
+	result.SalaryTo = derefInt64(salaryTo)
+	result.SalaryCurrency = derefStr(salaryCurrency)
+	result.Deadline = derefStr(deadline)
 
 	return result, nil
 }
@@ -370,15 +421,37 @@ type scannable interface {
 func scanListing(row scannable) (*model.Listing, error) {
 	l := &model.Listing{Company: &model.Company{}}
 
+	var city *string
+	var salaryFrom *int64
+	var salaryTo *int64
+	var salaryCurrency *string
+	var deadline *string
+
+	var cName *string
+	var cLogo *string
+	var cIndustry *string
+	var cCity *string
+
 	err := row.Scan(
 		&l.ID, &l.CompanyID, &l.Title, &l.Description, &l.Requirements, &l.WhatWeOffer,
-		&l.City, &l.Format, &l.EmploymentType, &l.SalaryFrom, &l.SalaryTo,
-		&l.SalaryCurrency, &l.Deadline, &l.Status, &l.CreatedAt, &l.UpdatedAt,
-		&l.Company.ID, &l.Company.Name, &l.Company.LogoURL, &l.Company.Industry, &l.Company.City,
+		&city, &l.Format, &l.EmploymentType, &salaryFrom, &salaryTo,
+		&salaryCurrency, &deadline, &l.Status, &l.CreatedAt, &l.UpdatedAt,
+		&l.Company.ID, &cName, &cLogo, &cIndustry, &cCity,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	l.City = derefStr(city)
+	l.SalaryFrom = derefInt64(salaryFrom)
+	l.SalaryTo = derefInt64(salaryTo)
+	l.SalaryCurrency = derefStr(salaryCurrency)
+	l.Deadline = derefStr(deadline)
+
+	l.Company.Name = derefStr(cName)
+	l.Company.LogoURL = derefStr(cLogo)
+	l.Company.Industry = derefStr(cIndustry)
+	l.Company.City = derefStr(cCity)
 
 	return l, nil
 }
@@ -397,4 +470,18 @@ func nullIfZeroInt(n int64) any {
 	}
 
 	return n
+}
+
+func derefStr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func derefInt64(n *int64) int64 {
+	if n == nil {
+		return 0
+	}
+	return *n
 }

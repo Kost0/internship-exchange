@@ -9,6 +9,7 @@ type ListingSkillResponse struct {
 
 type CompanyInfoResponse struct {
 	ID       string `json:"id"`
+	UserID   string `json:"userId"`
 	Name     string `json:"name"`
 	LogoURL  string `json:"logoUrl"`
 	Industry string `json:"industry"`

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -35,6 +36,7 @@ func (h *ListingHandler) GetListings(ctx context.Context, req *listingpb.GetList
 
 	listings, total, err := h.svc.GetListings(ctx, filter)
 	if err != nil {
+		log.Printf("GetListings error: %v", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -56,6 +58,7 @@ func (h *ListingHandler) GetListing(ctx context.Context, req *listingpb.GetListi
 		return nil, status.Error(codes.NotFound, "listing not found")
 	}
 	if err != nil {
+		log.Printf("GetListing error id=%s: %v", req.Id, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -65,6 +68,7 @@ func (h *ListingHandler) GetListing(ctx context.Context, req *listingpb.GetListi
 func (h *ListingHandler) GetMyListings(ctx context.Context, req *listingpb.GetMyListingsRequest) (*listingpb.GetMyListingsResponse, error) {
 	listings, err := h.svc.GetMyListings(ctx, req.CompanyId)
 	if err != nil {
+		log.Printf("GetMyListings error companyUserId=%s: %v", req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -93,6 +97,7 @@ func (h *ListingHandler) CreateListing(ctx context.Context, req *listingpb.Creat
 
 	listing, err := h.svc.CreateListing(ctx, req.CompanyId, l)
 	if err != nil {
+		log.Printf("CreateListing error companyUserId=%s: %v", req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -122,6 +127,7 @@ func (h *ListingHandler) UpdateListing(ctx context.Context, req *listingpb.Updat
 		return nil, status.Error(codes.PermissionDenied, "forbidden")
 	}
 	if err != nil {
+		log.Printf("UpdateListing error id=%s companyUserId=%s: %v", req.Id, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -133,7 +139,7 @@ func (h *ListingHandler) DeleteListing(ctx context.Context, req *listingpb.Delet
 		if errors.Is(err, repository.ErrNotFound) {
 			return nil, status.Error(codes.NotFound, "listing not found or not a draft")
 		}
-
+		log.Printf("DeleteListing error id=%s companyUserId=%s: %v", req.Id, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -152,6 +158,7 @@ func (h *ListingHandler) PublishListing(ctx context.Context, req *listingpb.Publ
 		return nil, status.Error(codes.AlreadyExists, "listing already active")
 	}
 	if err != nil {
+		log.Printf("PublishListing error id=%s companyUserId=%s: %v", req.Id, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -170,6 +177,7 @@ func (h *ListingHandler) CloseListing(ctx context.Context, req *listingpb.CloseL
 		return nil, status.Error(codes.AlreadyExists, "listing already closed")
 	}
 	if err != nil {
+		log.Printf("CloseListing error id=%s companyUserId=%s: %v", req.Id, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -221,6 +229,7 @@ func listingToProto(l *model.Listing) *listingpb.ListingResponse {
 func (h *ListingHandler) SyncCompany(ctx context.Context, req *listingpb.SyncCompanyRequest) (*listingpb.SyncCompanyResponse, error) {
 	err := h.svc.SyncCompany(ctx, req.UserId, req.Name, req.LogoUrl, req.Industry, req.City)
 	if err != nil {
+		log.Printf("SyncCompany error userId=%s: %v", req.UserId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 	return &listingpb.SyncCompanyResponse{Success: true}, nil

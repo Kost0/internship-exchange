@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,15 +25,18 @@ func NewApplicationHandler(svc *service.ApplicationService) *ApplicationHandler 
 
 func (h *ApplicationHandler) Apply(ctx context.Context, req *applicationpb.ApplyRequest) (*applicationpb.ApplicationResponse, error) {
 	if req.StudentId == "" || req.ListingId == "" {
+		log.Printf("Apply invalid argument studentId=%q listingId=%q", req.StudentId, req.ListingId)
 		return nil, status.Error(codes.InvalidArgument, "student_id and listing_id are required")
 	}
 
 	app, err := h.svc.Apply(ctx, req.StudentId, req.ListingId, req.CoverLetter)
 	if err != nil {
 		if errors.Is(err, repository.ErrConflict) {
+			log.Printf("Apply conflict studentId=%s listingId=%s: %v", req.StudentId, req.ListingId, err)
 			return nil, status.Error(codes.AlreadyExists, "already applied to this listing")
 		}
 
+		log.Printf("Apply error studentId=%s listingId=%s: %v", req.StudentId, req.ListingId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -42,6 +46,7 @@ func (h *ApplicationHandler) Apply(ctx context.Context, req *applicationpb.Apply
 func (h *ApplicationHandler) GetMyApplications(ctx context.Context, req *applicationpb.GetMyApplicationsRequest) (*applicationpb.GetApplicationsResponse, error) {
 	apps, err := h.svc.GetMyApplications(ctx, req.StudentId)
 	if err != nil {
+		log.Printf("GetMyApplications error studentId=%s: %v", req.StudentId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -56,9 +61,11 @@ func (h *ApplicationHandler) GetMyApplications(ctx context.Context, req *applica
 func (h *ApplicationHandler) Withdraw(ctx context.Context, req *applicationpb.WithdrawRequest) (*applicationpb.WithdrawResponse, error) {
 	if err := h.svc.Withdraw(ctx, req.Id, req.StudentId); err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
+			log.Printf("Withdraw not found id=%s studentId=%s: %v", req.Id, req.StudentId, err)
 			return nil, status.Error(codes.NotFound, "application not found or cannot be withdrawn")
 		}
 
+		log.Printf("Withdraw error id=%s studentId=%s: %v", req.Id, req.StudentId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -68,6 +75,7 @@ func (h *ApplicationHandler) Withdraw(ctx context.Context, req *applicationpb.Wi
 func (h *ApplicationHandler) GetListingApplications(ctx context.Context, req *applicationpb.GetListingApplicationsRequest) (*applicationpb.GetApplicationsResponse, error) {
 	apps, err := h.svc.GetListingApplications(ctx, req.ListingId)
 	if err != nil {
+		log.Printf("GetListingApplications error listingId=%s companyId=%s: %v", req.ListingId, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -84,12 +92,15 @@ func (h *ApplicationHandler) ChangeStatus(ctx context.Context, req *applicationp
 
 	app, err := h.svc.ChangeStatus(ctx, req.Id, req.CompanyId, newStatus, req.Comment)
 	if errors.Is(err, repository.ErrNotFound) {
+		log.Printf("ChangeStatus not found id=%s companyId=%s status=%q: %v", req.Id, req.CompanyId, req.Status, err)
 		return nil, status.Error(codes.NotFound, "application not found")
 	}
 	if errors.Is(err, repository.ErrInvalidTransition) {
+		log.Printf("ChangeStatus invalid transition id=%s companyId=%s from/to status=%q comment=%q: %v", req.Id, req.CompanyId, req.Status, req.Comment, err)
 		return nil, status.Error(codes.InvalidArgument, "invalid status transition")
 	}
 	if err != nil {
+		log.Printf("ChangeStatus error id=%s companyId=%s status=%q comment=%q: %v", req.Id, req.CompanyId, req.Status, req.Comment, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -100,9 +111,11 @@ func (h *ApplicationHandler) GetHistory(ctx context.Context, req *applicationpb.
 	events, err := h.svc.GetHistory(ctx, req.Id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
+			log.Printf("GetHistory not found id=%s companyId=%s: %v", req.Id, req.CompanyId, err)
 			return nil, status.Error(codes.NotFound, "application not found")
 		}
 
+		log.Printf("GetHistory error id=%s companyId=%s: %v", req.Id, req.CompanyId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 

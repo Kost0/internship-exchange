@@ -6,16 +6,32 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
-func WriteJSON(w http.ResponseWriter, status int, v any) {
+func WriteJSON(w http.ResponseWriter, statusCode int, v any) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
+	w.WriteHeader(statusCode)
+
+	if msg, ok := v.(proto.Message); ok {
+		b, err := protojson.MarshalOptions{
+			EmitUnpopulated: true,
+			UseProtoNames:   false,
+		}.Marshal(msg)
+
+		if err == nil {
+			w.Write(b)
+
+			return
+		}
+	}
+
 	json.NewEncoder(w).Encode(v)
 }
 
-func WriteError(w http.ResponseWriter, status int, msg string) {
-	WriteJSON(w, status, map[string]string{"error": msg})
+func WriteError(w http.ResponseWriter, statusCode int, msg string) {
+	WriteJSON(w, statusCode, map[string]string{"error": msg})
 }
 
 func WriteGRPCError(w http.ResponseWriter, err error) {

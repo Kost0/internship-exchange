@@ -31,13 +31,21 @@ func (r *CompanyRepository) GetOrCreate(ctx context.Context, userID string) (*mo
 	`
 
 	c := &model.Company{}
+
+	var name, logoURL, industry, city *string
+
 	err := r.db.QueryRow(ctx, query, userID).Scan(
-		&c.ID, &c.UserID, &c.Name, &c.LogoURL,
-		&c.Industry, &c.City, &c.CreatedAt, &c.UpdatedAt,
+		&c.ID, &c.UserID, &name, &logoURL,
+		&industry, &city, &c.CreatedAt, &c.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	c.Name = derefStr(name)
+	c.LogoURL = derefStr(logoURL)
+	c.Industry = derefStr(industry)
+	c.City = derefStr(city)
 
 	return c, nil
 }
@@ -50,18 +58,23 @@ func (r *CompanyRepository) GetByUserID(ctx context.Context, userID string) (*mo
 	`
 
 	c := &model.Company{}
+	var name, logoURL, industry, city *string
 
 	err := r.db.QueryRow(ctx, query, userID).Scan(
-		&c.ID, &c.UserID, &c.Name, &c.LogoURL,
-		&c.Industry, &c.City, &c.CreatedAt, &c.UpdatedAt,
+		&c.ID, &c.UserID, &name, &logoURL,
+		&industry, &city, &c.CreatedAt, &c.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound
 		}
-
 		return nil, err
 	}
+
+	c.Name = derefStr(name)
+	c.LogoURL = derefStr(logoURL)
+	c.Industry = derefStr(industry)
+	c.City = derefStr(city)
 
 	return c, nil
 }
@@ -74,18 +87,23 @@ func (r *CompanyRepository) GetByID(ctx context.Context, id string) (*model.Comp
 	`
 
 	c := &model.Company{}
+	var name, logoURL, industry, city *string
 
 	err := r.db.QueryRow(ctx, query, id).Scan(
-		&c.ID, &c.UserID, &c.Name, &c.LogoURL,
-		&c.Industry, &c.City, &c.CreatedAt, &c.UpdatedAt,
+		&c.ID, &c.UserID, &name, &logoURL,
+		&industry, &city, &c.CreatedAt, &c.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound
 		}
-
 		return nil, err
 	}
+
+	c.Name = derefStr(name)
+	c.LogoURL = derefStr(logoURL)
+	c.Industry = derefStr(industry)
+	c.City = derefStr(city)
 
 	return c, nil
 }
