@@ -79,11 +79,11 @@ func (r *ListingRepository) GetAll(ctx context.Context, f model.ListingsFilter) 
 	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
 	       l.deadline::text, l.status, l.created_at, l.updated_at,
 	       c.id,
-			c.user_id,
-			COALESCE(c.name, ''),
-			COALESCE(c.logo_url, ''),
-			COALESCE(c.industry, ''),
-			COALESCE(c.city, '')
+		   c.user_id,
+		   COALESCE(c.name, ''),
+		   COALESCE(c.logo_url, ''),
+		   COALESCE(c.industry, ''),
+		   COALESCE(c.city, '')
 	FROM listings l
 	JOIN companies c ON c.id = l.company_id
 	%s

@@ -57,7 +57,7 @@ export default function ListingDetail() {
                         <div>
                             <h1 className="text-xl font-bold text-gray-900">{listing.title}</h1>
                             <Link
-                                to={`/companies/${listing.company?.userId}`}
+                                to={`/companies/${listing.company?.id}`}
                                 className="text-sm text-primary-600 font-medium hover:underline"
                             >
                                 {listing.company?.name}
@@ -154,7 +154,7 @@ export default function ListingDetail() {
                             <p className="text-sm text-gray-600 mb-4">{listing.company.tagline}</p>
                         )}
                         <Link
-                            to={`/companies/${listing.company?.userId}`}
+                            to={`/companies/${listing.company?.id}`}
                             className="block text-center border border-primary-200 text-primary-600 font-medium text-sm py-2.5 rounded-xl hover:bg-primary-50 transition-colors"
                         >
                             Профиль компании

@@ -118,3 +118,7 @@ func (s *ListingService) CloseListing(ctx context.Context, id, userID string) (*
 func (s *ListingService) SyncCompany(ctx context.Context, userID, name, logo, industry, city string) error {
 	return s.companies.SyncFromProfile(ctx, userID, name, logo, industry, city)
 }
+
+func (s *ListingService) GetCompany(ctx context.Context, id string) (*model.Company, error) {
+	return s.companies.GetByID(ctx, id)
+}

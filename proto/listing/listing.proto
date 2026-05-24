@@ -14,6 +14,7 @@ service ListingService {
   rpc PublishListing(PublishListingRequest) returns (ListingResponse);
   rpc CloseListing(CloseListingRequest) returns (ListingResponse);
   rpc SyncCompany(SyncCompanyRequest) returns (SyncCompanyResponse);
+  rpc GetCompany(GetCompanyRequest) returns (CompanyResponse);
 }
 
 message ListingSkill {
@@ -121,3 +122,14 @@ message SyncCompanyRequest {
   string city = 5;
 }
 message SyncCompanyResponse { bool success = 1; }
+
+message GetCompanyRequest { string id = 1; }
+
+message CompanyResponse {
+  string id          = 1;
+  string user_id     = 2;
+  string name        = 3;
+  string logo_url    = 4;
+  string industry    = 5;
+  string city        = 6;
+}

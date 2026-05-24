@@ -28,6 +28,7 @@ const (
 	ListingService_PublishListing_FullMethodName = "/listing.ListingService/PublishListing"
 	ListingService_CloseListing_FullMethodName   = "/listing.ListingService/CloseListing"
 	ListingService_SyncCompany_FullMethodName    = "/listing.ListingService/SyncCompany"
+	ListingService_GetCompany_FullMethodName     = "/listing.ListingService/GetCompany"
 )
 
 // ListingServiceClient is the client API for ListingService service.
@@ -43,6 +44,7 @@ type ListingServiceClient interface {
 	PublishListing(ctx context.Context, in *PublishListingRequest, opts ...grpc.CallOption) (*ListingResponse, error)
 	CloseListing(ctx context.Context, in *CloseListingRequest, opts ...grpc.CallOption) (*ListingResponse, error)
 	SyncCompany(ctx context.Context, in *SyncCompanyRequest, opts ...grpc.CallOption) (*SyncCompanyResponse, error)
+	GetCompany(ctx context.Context, in *GetCompanyRequest, opts ...grpc.CallOption) (*CompanyResponse, error)
 }
 
 type listingServiceClient struct {
@@ -143,6 +145,16 @@ func (c *listingServiceClient) SyncCompany(ctx context.Context, in *SyncCompanyR
 	return out, nil
 }
 
+func (c *listingServiceClient) GetCompany(ctx context.Context, in *GetCompanyRequest, opts ...grpc.CallOption) (*CompanyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompanyResponse)
+	err := c.cc.Invoke(ctx, ListingService_GetCompany_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ListingServiceServer is the server API for ListingService service.
 // All implementations must embed UnimplementedListingServiceServer
 // for forward compatibility.
@@ -156,6 +168,7 @@ type ListingServiceServer interface {
 	PublishListing(context.Context, *PublishListingRequest) (*ListingResponse, error)
 	CloseListing(context.Context, *CloseListingRequest) (*ListingResponse, error)
 	SyncCompany(context.Context, *SyncCompanyRequest) (*SyncCompanyResponse, error)
+	GetCompany(context.Context, *GetCompanyRequest) (*CompanyResponse, error)
 	mustEmbedUnimplementedListingServiceServer()
 }
 
@@ -192,6 +205,9 @@ func (UnimplementedListingServiceServer) CloseListing(context.Context, *CloseLis
 }
 func (UnimplementedListingServiceServer) SyncCompany(context.Context, *SyncCompanyRequest) (*SyncCompanyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SyncCompany not implemented")
+}
+func (UnimplementedListingServiceServer) GetCompany(context.Context, *GetCompanyRequest) (*CompanyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCompany not implemented")
 }
 func (UnimplementedListingServiceServer) mustEmbedUnimplementedListingServiceServer() {}
 func (UnimplementedListingServiceServer) testEmbeddedByValue()                        {}
@@ -376,6 +392,24 @@ func _ListingService_SyncCompany_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ListingService_GetCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCompanyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ListingServiceServer).GetCompany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ListingService_GetCompany_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ListingServiceServer).GetCompany(ctx, req.(*GetCompanyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ListingService_ServiceDesc is the grpc.ServiceDesc for ListingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +452,10 @@ var ListingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SyncCompany",
 			Handler:    _ListingService_SyncCompany_Handler,
+		},
+		{
+			MethodName: "GetCompany",
+			Handler:    _ListingService_GetCompany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

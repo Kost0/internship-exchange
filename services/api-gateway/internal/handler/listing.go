@@ -283,3 +283,20 @@ func protoToListingDTO(l *listingpb.ListingResponse) dto.ListingResponse {
 
 	return res
 }
+
+func (h *ListingHandler) GetCompany(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	res, err := h.client.GetCompany(r.Context(), &listingpb.GetCompanyRequest{Id: id})
+	if err != nil {
+		proxy.WriteGRPCError(w, err)
+		return
+	}
+	proxy.WriteJSON(w, http.StatusOK, map[string]any{
+		"id":       res.Id,
+		"userId":   res.UserId,
+		"name":     res.Name,
+		"logoUrl":  res.LogoUrl,
+		"industry": res.Industry,
+		"city":     res.City,
+	})
+}

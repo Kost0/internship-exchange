@@ -235,3 +235,17 @@ func (h *ListingHandler) SyncCompany(ctx context.Context, req *listingpb.SyncCom
 	}
 	return &listingpb.SyncCompanyResponse{Success: true}, nil
 }
+
+func (h *ListingHandler) GetCompany(ctx context.Context, req *listingpb.GetCompanyRequest) (*listingpb.CompanyResponse, error) {
+	company, err := h.svc.GetCompany(ctx, req.Id)
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, status.Error(codes.NotFound, "company not found")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return &listingpb.CompanyResponse{
+		Id: company.ID, UserId: company.UserID, Name: company.Name,
+		LogoUrl: company.LogoURL, Industry: company.Industry, City: company.City,
+	}, nil
+}

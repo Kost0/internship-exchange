@@ -1237,6 +1237,134 @@ func (x *SyncCompanyResponse) GetSuccess() bool {
 	return false
 }
 
+type GetCompanyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCompanyRequest) Reset() {
+	*x = GetCompanyRequest{}
+	mi := &file_proto_listing_listing_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCompanyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCompanyRequest) ProtoMessage() {}
+
+func (x *GetCompanyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_listing_listing_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCompanyRequest.ProtoReflect.Descriptor instead.
+func (*GetCompanyRequest) Descriptor() ([]byte, []int) {
+	return file_proto_listing_listing_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GetCompanyRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type CompanyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	LogoUrl       string                 `protobuf:"bytes,4,opt,name=logo_url,json=logoUrl,proto3" json:"logo_url,omitempty"`
+	Industry      string                 `protobuf:"bytes,5,opt,name=industry,proto3" json:"industry,omitempty"`
+	City          string                 `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompanyResponse) Reset() {
+	*x = CompanyResponse{}
+	mi := &file_proto_listing_listing_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompanyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompanyResponse) ProtoMessage() {}
+
+func (x *CompanyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_listing_listing_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompanyResponse.ProtoReflect.Descriptor instead.
+func (*CompanyResponse) Descriptor() ([]byte, []int) {
+	return file_proto_listing_listing_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *CompanyResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CompanyResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *CompanyResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CompanyResponse) GetLogoUrl() string {
+	if x != nil {
+		return x.LogoUrl
+	}
+	return ""
+}
+
+func (x *CompanyResponse) GetIndustry() string {
+	if x != nil {
+		return x.Industry
+	}
+	return ""
+}
+
+func (x *CompanyResponse) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
 var File_proto_listing_listing_proto protoreflect.FileDescriptor
 
 const file_proto_listing_listing_proto_rawDesc = "" +
@@ -1354,7 +1482,16 @@ const file_proto_listing_listing_proto_rawDesc = "" +
 	"\bindustry\x18\x04 \x01(\tR\bindustry\x12\x12\n" +
 	"\x04city\x18\x05 \x01(\tR\x04city\"/\n" +
 	"\x13SyncCompanyResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xb0\x05\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"#\n" +
+	"\x11GetCompanyRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x99\x01\n" +
+	"\x0fCompanyResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x19\n" +
+	"\blogo_url\x18\x04 \x01(\tR\alogoUrl\x12\x1a\n" +
+	"\bindustry\x18\x05 \x01(\tR\bindustry\x12\x12\n" +
+	"\x04city\x18\x06 \x01(\tR\x04city2\xf4\x05\n" +
 	"\x0eListingService\x12H\n" +
 	"\vGetListings\x12\x1b.listing.GetListingsRequest\x1a\x1c.listing.GetListingsResponse\x12B\n" +
 	"\n" +
@@ -1365,7 +1502,9 @@ const file_proto_listing_listing_proto_rawDesc = "" +
 	"\rDeleteListing\x12\x1d.listing.DeleteListingRequest\x1a\x1e.listing.DeleteListingResponse\x12J\n" +
 	"\x0ePublishListing\x12\x1e.listing.PublishListingRequest\x1a\x18.listing.ListingResponse\x12F\n" +
 	"\fCloseListing\x12\x1c.listing.CloseListingRequest\x1a\x18.listing.ListingResponse\x12H\n" +
-	"\vSyncCompany\x12\x1b.listing.SyncCompanyRequest\x1a\x1c.listing.SyncCompanyResponseB4Z2github.com/Kost0/internship-exchange/proto/listingb\x06proto3"
+	"\vSyncCompany\x12\x1b.listing.SyncCompanyRequest\x1a\x1c.listing.SyncCompanyResponse\x12B\n" +
+	"\n" +
+	"GetCompany\x12\x1a.listing.GetCompanyRequest\x1a\x18.listing.CompanyResponseB4Z2github.com/Kost0/internship-exchange/proto/listingb\x06proto3"
 
 var (
 	file_proto_listing_listing_proto_rawDescOnce sync.Once
@@ -1379,7 +1518,7 @@ func file_proto_listing_listing_proto_rawDescGZIP() []byte {
 	return file_proto_listing_listing_proto_rawDescData
 }
 
-var file_proto_listing_listing_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_proto_listing_listing_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_proto_listing_listing_proto_goTypes = []any{
 	(*ListingSkill)(nil),          // 0: listing.ListingSkill
 	(*CompanyInfo)(nil),           // 1: listing.CompanyInfo
@@ -1397,6 +1536,8 @@ var file_proto_listing_listing_proto_goTypes = []any{
 	(*CloseListingRequest)(nil),   // 13: listing.CloseListingRequest
 	(*SyncCompanyRequest)(nil),    // 14: listing.SyncCompanyRequest
 	(*SyncCompanyResponse)(nil),   // 15: listing.SyncCompanyResponse
+	(*GetCompanyRequest)(nil),     // 16: listing.GetCompanyRequest
+	(*CompanyResponse)(nil),       // 17: listing.CompanyResponse
 }
 var file_proto_listing_listing_proto_depIdxs = []int32{
 	1,  // 0: listing.ListingResponse.company:type_name -> listing.CompanyInfo
@@ -1412,17 +1553,19 @@ var file_proto_listing_listing_proto_depIdxs = []int32{
 	12, // 10: listing.ListingService.PublishListing:input_type -> listing.PublishListingRequest
 	13, // 11: listing.ListingService.CloseListing:input_type -> listing.CloseListingRequest
 	14, // 12: listing.ListingService.SyncCompany:input_type -> listing.SyncCompanyRequest
-	4,  // 13: listing.ListingService.GetListings:output_type -> listing.GetListingsResponse
-	2,  // 14: listing.ListingService.GetListing:output_type -> listing.ListingResponse
-	7,  // 15: listing.ListingService.GetMyListings:output_type -> listing.GetMyListingsResponse
-	2,  // 16: listing.ListingService.CreateListing:output_type -> listing.ListingResponse
-	2,  // 17: listing.ListingService.UpdateListing:output_type -> listing.ListingResponse
-	11, // 18: listing.ListingService.DeleteListing:output_type -> listing.DeleteListingResponse
-	2,  // 19: listing.ListingService.PublishListing:output_type -> listing.ListingResponse
-	2,  // 20: listing.ListingService.CloseListing:output_type -> listing.ListingResponse
-	15, // 21: listing.ListingService.SyncCompany:output_type -> listing.SyncCompanyResponse
-	13, // [13:22] is the sub-list for method output_type
-	4,  // [4:13] is the sub-list for method input_type
+	16, // 13: listing.ListingService.GetCompany:input_type -> listing.GetCompanyRequest
+	4,  // 14: listing.ListingService.GetListings:output_type -> listing.GetListingsResponse
+	2,  // 15: listing.ListingService.GetListing:output_type -> listing.ListingResponse
+	7,  // 16: listing.ListingService.GetMyListings:output_type -> listing.GetMyListingsResponse
+	2,  // 17: listing.ListingService.CreateListing:output_type -> listing.ListingResponse
+	2,  // 18: listing.ListingService.UpdateListing:output_type -> listing.ListingResponse
+	11, // 19: listing.ListingService.DeleteListing:output_type -> listing.DeleteListingResponse
+	2,  // 20: listing.ListingService.PublishListing:output_type -> listing.ListingResponse
+	2,  // 21: listing.ListingService.CloseListing:output_type -> listing.ListingResponse
+	15, // 22: listing.ListingService.SyncCompany:output_type -> listing.SyncCompanyResponse
+	17, // 23: listing.ListingService.GetCompany:output_type -> listing.CompanyResponse
+	14, // [14:24] is the sub-list for method output_type
+	4,  // [4:14] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -1439,7 +1582,7 @@ func file_proto_listing_listing_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_listing_listing_proto_rawDesc), len(file_proto_listing_listing_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

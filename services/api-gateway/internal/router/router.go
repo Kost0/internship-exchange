@@ -58,7 +58,7 @@ func New(cfg *config.Config) http.Handler {
 			r.Post("/refresh", authHandler.Refresh)
 		})
 
-		r.Get("/companies/{id}", profileHandler.GetCompanyProfile)
+		r.Get("/companies/{id}", listingHandler.GetCompany)
 
 		r.Route("/listings", func(r chi.Router) {
 			r.Get("/", listingHandler.GetListings)
