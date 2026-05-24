@@ -25,8 +25,12 @@
   }
 
   .btn-secondary {
-    @apply border border-gray-200 hover:border-primary-300 text-gray-700
+    @apply border border-gray-200 hover:border-gray-300 text-gray-700
     font-medium rounded-lg bg-white transition-colors;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-gray-200 p-6;
   }
 }
 

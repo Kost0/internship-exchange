@@ -238,17 +238,19 @@ function ResumeLink({ studentId }) {
 
 function EducationItem({ edu, onDelete }) {
     return (
-        <div className="border-l-2 border-primary-200 pl-4">
+        <div className="rounded-lg border border-gray-200 p-4">
             <div className="flex items-start justify-between">
                 <div>
                     <p className="font-medium text-gray-900">{edu.university}</p>
-                    <p className="text-sm text-gray-500">{edu.faculty} · {edu.specialization}</p>
-                    <p className="text-sm text-gray-400">
-                        {degreeLabels[edu.degree]} · {edu.startYear} — {edu.isCurrent ? 'по н.в.' : edu.endYear}
+                    <p className="text-sm text-gray-500 mt-0.5">{edu.faculty} · {edu.specialization}</p>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                        {degreeLabels[edu.degree]} · {edu.start_year} — {edu.is_current ? 'по н.в.' : edu.end_year}
                     </p>
-                    {edu.gpa > 0 && <p className="text-xs text-gray-400">GPA: {edu.gpa}</p>}
+                    {edu.gpa > 0 && <p className="text-xs text-gray-400 mt-0.5">GPA: {edu.gpa}</p>}
                 </div>
-                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>
+                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition flex-shrink-0 ml-4">
+                    Удалить
+                </button>
             </div>
         </div>
     )
@@ -256,17 +258,19 @@ function EducationItem({ edu, onDelete }) {
 
 function ExperienceItem({ exp, onDelete }) {
     return (
-        <div className="border-l-2 border-primary-200 pl-4">
+        <div className="rounded-lg border border-gray-200 p-4">
             <div className="flex items-start justify-between">
                 <div>
                     <p className="font-medium text-gray-900">{exp.position}</p>
-                    <p className="text-sm text-gray-500">{exp.companyName} · {formatLabels[exp.format]}</p>
-                    <p className="text-sm text-gray-400">
-                        {exp.startDate} — {exp.isCurrent ? 'по н.в.' : exp.endDate}
+                    <p className="text-sm text-gray-500 mt-0.5">{exp.company_name} · {formatLabels[exp.format]}</p>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                        {exp.start_date} — {exp.is_current ? 'по н.в.' : exp.end_date}
                     </p>
                     {exp.description && <p className="text-sm text-gray-600 mt-1">{exp.description}</p>}
                 </div>
-                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>
+                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition flex-shrink-0 ml-4">
+                    Удалить
+                </button>
             </div>
         </div>
     )
@@ -274,10 +278,12 @@ function ExperienceItem({ exp, onDelete }) {
 
 function ProjectItem({ project, onDelete }) {
     return (
-        <div className="border border-gray-200 rounded-xl p-4">
-            <div className="flex items-start justify-between mb-1">
+        <div className="rounded-lg border border-gray-200 p-4">
+            <div className="flex items-start justify-between mb-2">
                 <p className="font-medium text-gray-900">{project.title}</p>
-                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>
+                <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition flex-shrink-0 ml-4">
+                    Удалить
+                </button>
             </div>
             {project.description && <p className="text-sm text-gray-500 mb-2">{project.description}</p>}
             <div className="flex flex-wrap gap-1.5 mb-2">
