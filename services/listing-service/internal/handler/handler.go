@@ -207,6 +207,7 @@ func listingToProto(l *model.Listing) *listingpb.ListingResponse {
 	if l.Company != nil {
 		resp.Company = &listingpb.CompanyInfo{
 			Id:       l.Company.ID,
+			UserId:   l.Company.UserID,
 			Name:     l.Company.Name,
 			LogoUrl:  l.Company.LogoURL,
 			Industry: l.Company.Industry,

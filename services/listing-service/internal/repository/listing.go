@@ -79,10 +79,11 @@ func (r *ListingRepository) GetAll(ctx context.Context, f model.ListingsFilter) 
 	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
 	       l.deadline::text, l.status, l.created_at, l.updated_at,
 	       c.id,
-	       COALESCE(c.name, ''),
-	       COALESCE(c.logo_url, ''),
-	       COALESCE(c.industry, ''),
-	       COALESCE(c.city, '')
+			c.user_id,
+			COALESCE(c.name, ''),
+			COALESCE(c.logo_url, ''),
+			COALESCE(c.industry, ''),
+			COALESCE(c.city, '')
 	FROM listings l
 	JOIN companies c ON c.id = l.company_id
 	%s
@@ -121,7 +122,7 @@ func (r *ListingRepository) GetByID(ctx context.Context, id string) (*model.List
 	SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
 	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
 	       l.deadline::text, l.status, l.created_at, l.updated_at,
-	       c.id,
+	       c.id, c.user_id,
 	       COALESCE(c.name, ''),
 	       COALESCE(c.logo_url, ''),
 	       COALESCE(c.industry, ''),
@@ -156,7 +157,7 @@ func (r *ListingRepository) GetByCompanyID(ctx context.Context, companyID string
 	SELECT l.id, l.company_id, l.title, l.description, l.requirements, l.what_we_offer,
 	       l.city, l.format, l.employment_type, l.salary_from, l.salary_to, l.salary_currency,
 	       l.deadline::text, l.status, l.created_at, l.updated_at,
-	       c.id,
+	       c.id, c.user_id,
 	       COALESCE(c.name, ''),
 	       COALESCE(c.logo_url, ''),
 	       COALESCE(c.industry, ''),
@@ -427,6 +428,7 @@ func scanListing(row scannable) (*model.Listing, error) {
 	var salaryCurrency *string
 	var deadline *string
 
+	var cUserID *string
 	var cName *string
 	var cLogo *string
 	var cIndustry *string
@@ -436,7 +438,7 @@ func scanListing(row scannable) (*model.Listing, error) {
 		&l.ID, &l.CompanyID, &l.Title, &l.Description, &l.Requirements, &l.WhatWeOffer,
 		&city, &l.Format, &l.EmploymentType, &salaryFrom, &salaryTo,
 		&salaryCurrency, &deadline, &l.Status, &l.CreatedAt, &l.UpdatedAt,
-		&l.Company.ID, &cName, &cLogo, &cIndustry, &cCity,
+		&l.Company.ID, &cUserID, &cName, &cLogo, &cIndustry, &cCity,
 	)
 	if err != nil {
 		return nil, err
@@ -448,6 +450,7 @@ func scanListing(row scannable) (*model.Listing, error) {
 	l.SalaryCurrency = derefStr(salaryCurrency)
 	l.Deadline = derefStr(deadline)
 
+	l.Company.UserID = derefStr(cUserID)
 	l.Company.Name = derefStr(cName)
 	l.Company.LogoURL = derefStr(cLogo)
 	l.Company.Industry = derefStr(cIndustry)

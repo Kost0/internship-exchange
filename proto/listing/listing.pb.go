@@ -96,6 +96,7 @@ type CompanyInfo struct {
 	LogoUrl       string                 `protobuf:"bytes,3,opt,name=logo_url,json=logoUrl,proto3" json:"logo_url,omitempty"`
 	Industry      string                 `protobuf:"bytes,4,opt,name=industry,proto3" json:"industry,omitempty"`
 	City          string                 `protobuf:"bytes,5,opt,name=city,proto3" json:"city,omitempty"`
+	UserId        string                 `protobuf:"bytes,6,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -161,6 +162,13 @@ func (x *CompanyInfo) GetIndustry() string {
 func (x *CompanyInfo) GetCity() string {
 	if x != nil {
 		return x.City
+	}
+	return ""
+}
+
+func (x *CompanyInfo) GetUserId() string {
+	if x != nil {
+		return x.UserId
 	}
 	return ""
 }
@@ -1240,13 +1248,14 @@ const file_proto_listing_listing_proto_rawDesc = "" +
 	"listing_id\x18\x02 \x01(\tR\tlistingId\x12\x14\n" +
 	"\x05skill\x18\x03 \x01(\tR\x05skill\x12\x1f\n" +
 	"\vis_required\x18\x04 \x01(\bR\n" +
-	"isRequired\"|\n" +
+	"isRequired\"\x95\x01\n" +
 	"\vCompanyInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x1a\n" +
 	"\bindustry\x18\x04 \x01(\tR\bindustry\x12\x12\n" +
-	"\x04city\x18\x05 \x01(\tR\x04city\"\xcd\x04\n" +
+	"\x04city\x18\x05 \x01(\tR\x04city\x12\x17\n" +
+	"\auser_id\x18\x06 \x01(\tR\x06userId\"\xcd\x04\n" +
 	"\x0fListingResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
