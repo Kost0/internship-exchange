@@ -66,7 +66,7 @@ export const profileApi = {
         apiClient.get('/profile/company').then((r) => r.data),
 
     getCompanyProfile: (id) =>
-        apiClient.get(`/profile/company/${id}`).then((r) => r.data),
+        apiClient.get(`/companies/${id}`).then((r) => r.data),
 
     updateCompanyProfile: (data) =>
         apiClient.put('/profile/company', data).then((r) => r.data),

@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/Kost0/internship-exchange/services/profile-service/internal/clients"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 
@@ -46,9 +47,14 @@ func main() {
 	}
 	log.Println("minio connected")
 
+	listingClient, err := clients.NewListingClient(cfg.ListingServiceAddr)
+	if err != nil {
+		log.Fatalf("failed to connect to listing-service: %v", err)
+	}
+
 	studentRepo := repository.NewStudentRepository(pool)
 	companyRepo := repository.NewCompanyRepository(pool)
-	profileSvc := service.NewProfileService(studentRepo, companyRepo, minioStorage)
+	profileSvc := service.NewProfileService(studentRepo, companyRepo, minioStorage, listingClient)
 	profileHandler := handler.NewProfileHandler(profileSvc)
 
 	grpcServer := grpc.NewServer()

@@ -34,14 +34,16 @@ func (s ApplicationStatus) CanTransitionTo(next ApplicationStatus) bool {
 }
 
 type Application struct {
-	ID          string
-	StudentID   string
-	ListingID   string
-	CoverLetter string
-	Status      ApplicationStatus
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Events      []ApplicationEvent
+	ID           string
+	StudentID    string
+	ListingID    string
+	CoverLetter  string
+	Status       ApplicationStatus
+	StudentEmail string
+	CompanyEmail string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Events       []ApplicationEvent
 }
 
 type ApplicationEvent struct {

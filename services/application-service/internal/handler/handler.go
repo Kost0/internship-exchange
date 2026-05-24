@@ -25,18 +25,14 @@ func NewApplicationHandler(svc *service.ApplicationService) *ApplicationHandler 
 
 func (h *ApplicationHandler) Apply(ctx context.Context, req *applicationpb.ApplyRequest) (*applicationpb.ApplicationResponse, error) {
 	if req.StudentId == "" || req.ListingId == "" {
-		log.Printf("Apply invalid argument studentId=%q listingId=%q", req.StudentId, req.ListingId)
 		return nil, status.Error(codes.InvalidArgument, "student_id and listing_id are required")
 	}
 
-	app, err := h.svc.Apply(ctx, req.StudentId, req.ListingId, req.CoverLetter)
+	app, err := h.svc.Apply(ctx, req.StudentId, req.ListingId, req.CoverLetter, req.StudentEmail, req.CompanyEmail)
+	if errors.Is(err, repository.ErrConflict) {
+		return nil, status.Error(codes.AlreadyExists, "already applied to this listing")
+	}
 	if err != nil {
-		if errors.Is(err, repository.ErrConflict) {
-			log.Printf("Apply conflict studentId=%s listingId=%s: %v", req.StudentId, req.ListingId, err)
-			return nil, status.Error(codes.AlreadyExists, "already applied to this listing")
-		}
-
-		log.Printf("Apply error studentId=%s listingId=%s: %v", req.StudentId, req.ListingId, err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 

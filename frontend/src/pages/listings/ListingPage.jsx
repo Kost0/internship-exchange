@@ -30,19 +30,19 @@ export default function ListingsPage() {
 
     return (
         <div>
-            <div className="bg-primary-500 rounded-3xl px-10 py-12 mb-8 text-white">
-                <h1 className="text-3xl font-bold mb-2">Найди стажировку своей мечты</h1>
-                <p className="text-primary-100 mb-6">Тысячи компаний ищут молодых специалистов прямо сейчас</p>
+            <div className="bg-white border border-gray-200 rounded-2xl px-8 py-8 mb-8">
+                <h1 className="text-3xl font-bold mb-2 text-gray-900">Найди стажировку своей мечты</h1>
+                <p className="text-gray-500 mb-6">Тысячи компаний ищут молодых специалистов прямо сейчас</p>
                 <form onSubmit={handleSearch} className="flex gap-3 max-w-2xl">
                     <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Поиск по вакансиям, компаниям, навыкам..."
-                        className="flex-1 px-5 py-3 rounded-xl text-gray-900 text-sm border border-white/40 focus:outline-none focus:ring-2 focus:ring-white"
+                        className="flex-1 px-5 py-3 rounded-lg text-gray-900 text-sm border border-gray-200 focus:outline-none focus:border-primary-300"
                     />
                     <button
                         type="submit"
-                        className="bg-white text-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-primary-50 transition-colors"
+                        className="bg-primary-500 text-white font-medium px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
                     >
                         Найти
                     </button>
@@ -55,7 +55,7 @@ export default function ListingsPage() {
                     <button
                         key={f.value}
                         onClick={() => setFilters((prev) => ({ ...prev, format: f.value || undefined, page: 1 }))}
-                        className={`text-sm px-4 py-1.5 rounded-full font-medium transition-colors ${
+                        className={`text-sm px-4 py-1.5 rounded-md font-medium transition-colors ${
                             filters.format === f.value || (!filters.format && f.value === '')
                                 ? 'bg-primary-500 text-white'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'

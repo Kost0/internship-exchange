@@ -43,17 +43,17 @@ export default function CompanyProfile({ own = false }) {
 
     return (
         <div className="max-w-5xl mx-auto space-y-6">
-            <div className="bg-primary-100 rounded-3xl p-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8">
                 <div className="flex items-end gap-5">
                     <div className="relative">
-                        <div className="w-24 h-24 rounded-2xl bg-primary-500 flex items-center justify-center text-white font-bold text-3xl overflow-hidden shadow-lg">
+                        <div className="w-24 h-24 rounded-xl border border-primary-200 flex items-center justify-center text-primary-600 font-bold text-3xl overflow-hidden bg-white">
                             {profile.logoUrl
                                 ? <img src={profile.logoUrl} className="w-full h-full object-cover" alt="logo" />
                                 : profile.name?.[0]
                             }
                         </div>
                         {own && (
-                            <label className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition shadow">
+                            <label className="absolute -bottom-1 -right-1 w-7 h-7 bg-white border border-gray-200 rounded-md flex items-center justify-center cursor-pointer hover:bg-primary-600 transition shadow">
                                 <span className="text-white text-sm">+</span>
                                 <input type="file" accept="image/*" className="hidden"
                                        onChange={(e) => e.target.files?.[0] && uploadLogo.mutate(e.target.files[0])}

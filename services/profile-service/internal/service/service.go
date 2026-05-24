@@ -4,26 +4,30 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Kost0/internship-exchange/services/profile-service/internal/clients"
 	"github.com/Kost0/internship-exchange/services/profile-service/internal/model"
 	"github.com/Kost0/internship-exchange/services/profile-service/internal/repository"
 	"github.com/Kost0/internship-exchange/services/profile-service/internal/storage"
 )
 
 type ProfileService struct {
-	students  *repository.StudentRepository
-	companies *repository.CompanyRepository
-	storage   *storage.MinioStorage
+	students      *repository.StudentRepository
+	companies     *repository.CompanyRepository
+	storage       *storage.MinioStorage
+	listingClient *clients.ListingClient
 }
 
 func NewProfileService(
 	students *repository.StudentRepository,
 	companies *repository.CompanyRepository,
 	storage *storage.MinioStorage,
+	listingClient *clients.ListingClient,
 ) *ProfileService {
 	return &ProfileService{
-		students:  students,
-		companies: companies,
-		storage:   storage,
+		students:      students,
+		companies:     companies,
+		storage:       storage,
+		listingClient: listingClient,
 	}
 }
 
@@ -179,7 +183,14 @@ func (s *ProfileService) GetCompanyProfile(ctx context.Context, id string) (*mod
 }
 
 func (s *ProfileService) UpdateCompanyProfile(ctx context.Context, userID string, c model.Company) (*model.Company, error) {
-	return s.companies.Update(ctx, userID, c)
+	result, err := s.companies.Update(ctx, userID, c)
+	if err != nil {
+		return nil, err
+	}
+
+	s.listingClient.SyncCompany(ctx, result.UserID, result.Name, result.LogoURL, result.Industry, result.City)
+
+	return result, nil
 }
 
 func (s *ProfileService) UploadLogo(ctx context.Context, userID string, data []byte, contentType string) (string, error) {
@@ -187,8 +198,16 @@ func (s *ProfileService) UploadLogo(ctx context.Context, userID string, data []b
 	if err != nil {
 		return "", err
 	}
+	if err = s.companies.SetLogoURL(ctx, userID, url); err != nil {
+		return "", err
+	}
 
-	return url, s.companies.SetLogoURL(ctx, userID, url)
+	company, err := s.companies.GetByUserID(ctx, userID)
+	if err == nil {
+		s.listingClient.SyncCompany(ctx, company.UserID, company.Name, url, company.Industry, company.City)
+	}
+
+	return url, nil
 }
 
 func (s *ProfileService) loadStudentRelations(ctx context.Context, student *model.Student) (*model.Student, error) {
@@ -227,7 +246,7 @@ func (s *ProfileService) AddSkill(ctx context.Context, userID, skill, level stri
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return s.students.AddSkill(ctx, student.ID, skill, level)
 }
 

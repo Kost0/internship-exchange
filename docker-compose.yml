@@ -88,6 +88,7 @@ services:
       MINIO_ADDR: minio:9000
       MINIO_USER: minioadmin
       MINIO_PASS: minioadmin
+      LISTING_SERVICE_ADDR: listing-service:50053
     depends_on:
       postgres:
         condition: service_healthy
@@ -133,9 +134,9 @@ services:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
       SMTP_HOST: smtp.mailtrap.io
       SMTP_PORT: "587"
-      SMTP_USER: ""
-      SMTP_PASS: ""
-      FROM_EMAIL: noreply@internship-exchange.ru
+      SMTP_USER: ${SMTP_HOST}
+      SMTP_PASS: ${SMTP_PASSWORD}
+      FROM_EMAIL: ${SMTP_FROM}
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -17,6 +17,8 @@ const (
 	ContextUserRole contextKey = "user_role"
 )
 
+const ContextUserEmail contextKey = "user_email"
+
 type AuthMiddleware struct {
 	jwtSecret string
 	redis     *redis.Client
@@ -47,6 +49,9 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		ctx := context.WithValue(r.Context(), ContextUserID, userID)
 		ctx = context.WithValue(ctx, ContextUserRole, role)
+
+		email, _ := claims["email"].(string)
+		ctx = context.WithValue(ctx, ContextUserEmail, email)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -110,5 +115,10 @@ func GetUserID(ctx context.Context) string {
 func GetUserRole(ctx context.Context) string {
 	v, _ := ctx.Value(ContextUserRole).(string)
 
+	return v
+}
+
+func GetUserEmail(ctx context.Context) string {
+	v, _ := ctx.Value(ContextUserEmail).(string)
 	return v
 }

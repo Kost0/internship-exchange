@@ -53,7 +53,7 @@ func (p *Publisher) PublishApplicationCreated(ctx context.Context, applicationID
 	})
 }
 
-func (p *Publisher) PublishStatusChanged(ctx context.Context, applicationID, studentID, listingID, oldStatus, newStatus, comment string) {
+func (p *Publisher) PublishStatusChanged(ctx context.Context, applicationID, studentID, listingID, oldStatus, newStatus, comment, email string) {
 	p.publish(ctx, "application.status_changed", map[string]any{
 		"applicationId": applicationID,
 		"studentId":     studentID,
@@ -61,6 +61,7 @@ func (p *Publisher) PublishStatusChanged(ctx context.Context, applicationID, stu
 		"oldStatus":     oldStatus,
 		"newStatus":     newStatus,
 		"comment":       comment,
+		"email":         email,
 	})
 }
 

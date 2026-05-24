@@ -23,24 +23,27 @@ func NewApplicationHandler(conn *grpc.ClientConn) *ApplicationHandler {
 
 func (h *ApplicationHandler) Apply(w http.ResponseWriter, r *http.Request) {
 	studentID := middleware.GetUserID(r.Context())
+	studentEmail := middleware.GetUserEmail(r.Context()) // нужно добавить
 
 	var body struct {
-		ListingID   string `json:"listingId"`
-		CoverLetter string `json:"coverLetter"`
+		ListingID    string `json:"listingId"`
+		CoverLetter  string `json:"coverLetter"`
+		CompanyEmail string `json:"companyEmail"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		proxy.WriteError(w, http.StatusBadRequest, "invalid request body")
-
 		return
 	}
 
 	res, err := h.client.Apply(r.Context(), &applicationpb.ApplyRequest{
-		StudentId: studentID, ListingId: body.ListingID, CoverLetter: body.CoverLetter,
+		StudentId:    studentID,
+		ListingId:    body.ListingID,
+		CoverLetter:  body.CoverLetter,
+		StudentEmail: studentEmail,
+		CompanyEmail: body.CompanyEmail,
 	})
-
 	if err != nil {
 		proxy.WriteGRPCError(w, err)
-
 		return
 	}
 

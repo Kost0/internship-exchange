@@ -64,16 +64,16 @@ export default function StudentProfile() {
         <div className="max-w-4xl mx-auto space-y-6">
 
             {/* Header */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-start gap-5">
                     <div className="relative flex-shrink-0">
-                        <div className="w-20 h-20 rounded-2xl bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-2xl overflow-hidden">
+                        <div className="w-20 h-20 rounded-xl border border-primary-200 bg-white flex items-center justify-center text-primary-600 font-bold text-2xl overflow-hidden">
                             {profile.avatarUrl
                                 ? <img src={profile.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
                                 : `${profile.firstName?.[0] ?? ''}${profile.lastName?.[0] ?? ''}`
                             }
                         </div>
-                        <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition">
+                        <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-500 rounded-md flex items-center justify-center cursor-pointer hover:bg-primary-600 transition">
                             <span className="text-white text-xs">+</span>
                             <input type="file" accept="image/*" className="hidden"
                                    onChange={(e) => e.target.files?.[0] && uploadAvatar.mutate(e.target.files[0])}
@@ -125,7 +125,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Skills */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">Навыки</h2>
                     <button onClick={() => setAddingSkill(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
@@ -144,7 +144,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Languages */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">Языки</h2>
                     <button onClick={() => setAddingLang(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
@@ -163,7 +163,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Education */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">Образование</h2>
                     <button onClick={() => setAddingEdu(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
@@ -182,7 +182,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Experience */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">Опыт работы</h2>
                     <button onClick={() => setAddingExp(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
@@ -201,7 +201,7 @@ export default function StudentProfile() {
             </div>
 
             {/* Projects */}
-            <div className="bg-white rounded-2xl border border-primary-100 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">Проекты</h2>
                     <button onClick={() => setAddingProject(true)} className="text-sm text-primary-600 font-medium hover:underline">+ Добавить</button>
@@ -274,7 +274,7 @@ function ExperienceItem({ exp, onDelete }) {
 
 function ProjectItem({ project, onDelete }) {
     return (
-        <div className="border border-primary-100 rounded-xl p-4">
+        <div className="border border-gray-200 rounded-xl p-4">
             <div className="flex items-start justify-between mb-1">
                 <p className="font-medium text-gray-900">{project.title}</p>
                 <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 transition">Удалить</button>

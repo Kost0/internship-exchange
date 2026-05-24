@@ -55,7 +55,7 @@ func (s *AuthService) Register(ctx context.Context, email, password string, role
 		return nil, nil, err
 	}
 
-	tokens, err := s.generateTokenPair(user.ID, string(user.Role))
+	tokens, err := s.generateTokenPair(user.ID, string(user.Role), user.Email)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -77,7 +77,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (*model
 		return nil, nil, ErrInvalidCredentials
 	}
 
-	tokens, err := s.generateTokenPair(user.ID, string(user.Role))
+	tokens, err := s.generateTokenPair(user.ID, string(user.Role), user.Email)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -132,17 +132,18 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshTokenStr string) 
 
 	userID, _ := claims["sub"].(string)
 	role, _ := claims["role"].(string)
+	email, _ := claims["email"].(string)
 
-	return s.generateTokenPair(userID, role)
+	return s.generateTokenPair(userID, role, email)
 }
 
-func (s *AuthService) generateTokenPair(userID, role string) (*TokenPair, error) {
-	accessToken, err := s.generateToken(userID, role, "access", s.accessTokenTTL)
+func (s *AuthService) generateTokenPair(userID, role, email string) (*TokenPair, error) {
+	accessToken, err := s.generateToken(userID, role, email, "access", s.accessTokenTTL)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.generateToken(userID, role, "refresh", s.refreshTokenTTL)
+	refreshToken, err := s.generateToken(userID, role, email, "refresh", s.refreshTokenTTL)
 	if err != nil {
 		return nil, err
 	}
@@ -150,14 +151,15 @@ func (s *AuthService) generateTokenPair(userID, role string) (*TokenPair, error)
 	return &TokenPair{AccessToken: accessToken, RefreshToken: refreshToken}, nil
 }
 
-func (s *AuthService) generateToken(userID, role, tokenType string, ttl time.Duration) (string, error) {
+func (s *AuthService) generateToken(userID, role, email, tokenType string, ttl time.Duration) (string, error) {
 	claims := jwt.MapClaims{
-		"sub":  userID,
-		"role": role,
-		"type": tokenType,
-		"jti":  uuid.New().String(),
-		"iat":  time.Now().Unix(),
-		"exp":  time.Now().Add(ttl).Unix(),
+		"sub":   userID,
+		"role":  role,
+		"email": email,
+		"type":  tokenType,
+		"jti":   uuid.New().String(),
+		"iat":   time.Now().Unix(),
+		"exp":   time.Now().Add(ttl).Unix(),
 	}
 
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(s.jwtSecret)

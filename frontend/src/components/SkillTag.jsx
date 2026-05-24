@@ -4,10 +4,10 @@ export default function SkillTag({ label, variant = 'primary' }) {
     return (
         <span
             className={clsx(
-                'inline-block text-xs font-medium px-3 py-1 rounded-full',
+                'inline-block text-xs font-medium px-2.5 py-1 rounded-md border',
                 variant === 'primary'
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'bg-gray-100 text-gray-600'
+                    ? 'border-primary-200 text-primary-700 bg-white'
+                    : 'border-gray-200 text-gray-600 bg-white'
             )}
         >
       {label}

@@ -378,6 +378,8 @@ type ApplyRequest struct {
 	StudentId     string                 `protobuf:"bytes,1,opt,name=student_id,json=studentId,proto3" json:"student_id,omitempty"`
 	ListingId     string                 `protobuf:"bytes,2,opt,name=listing_id,json=listingId,proto3" json:"listing_id,omitempty"`
 	CoverLetter   string                 `protobuf:"bytes,3,opt,name=cover_letter,json=coverLetter,proto3" json:"cover_letter,omitempty"`
+	StudentEmail  string                 `protobuf:"bytes,4,opt,name=student_email,json=studentEmail,proto3" json:"student_email,omitempty"`
+	CompanyEmail  string                 `protobuf:"bytes,5,opt,name=company_email,json=companyEmail,proto3" json:"company_email,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -429,6 +431,20 @@ func (x *ApplyRequest) GetListingId() string {
 func (x *ApplyRequest) GetCoverLetter() string {
 	if x != nil {
 		return x.CoverLetter
+	}
+	return ""
+}
+
+func (x *ApplyRequest) GetStudentEmail() string {
+	if x != nil {
+		return x.StudentEmail
+	}
+	return ""
+}
+
+func (x *ApplyRequest) GetCompanyEmail() string {
+	if x != nil {
+		return x.CompanyEmail
 	}
 	return ""
 }
@@ -879,13 +895,15 @@ const file_proto_application_application_proto_rawDesc = "" +
 	"\astudent\x18\b \x01(\v2\x18.application.StudentInfoR\astudent\x122\n" +
 	"\alisting\x18\t \x01(\v2\x18.application.ListingInfoR\alisting\x125\n" +
 	"\x06events\x18\n" +
-	" \x03(\v2\x1d.application.ApplicationEventR\x06events\"o\n" +
+	" \x03(\v2\x1d.application.ApplicationEventR\x06events\"\xb9\x01\n" +
 	"\fApplyRequest\x12\x1d\n" +
 	"\n" +
 	"student_id\x18\x01 \x01(\tR\tstudentId\x12\x1d\n" +
 	"\n" +
 	"listing_id\x18\x02 \x01(\tR\tlistingId\x12!\n" +
-	"\fcover_letter\x18\x03 \x01(\tR\vcoverLetter\"9\n" +
+	"\fcover_letter\x18\x03 \x01(\tR\vcoverLetter\x12#\n" +
+	"\rstudent_email\x18\x04 \x01(\tR\fstudentEmail\x12#\n" +
+	"\rcompany_email\x18\x05 \x01(\tR\fcompanyEmail\"9\n" +
 	"\x18GetMyApplicationsRequest\x12\x1d\n" +
 	"\n" +
 	"student_id\x18\x01 \x01(\tR\tstudentId\"Q\n" +

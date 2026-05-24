@@ -25,24 +25,24 @@ func NewApplicationRepository(db *pgxpool.Pool) *ApplicationRepository {
 	return &ApplicationRepository{db: db}
 }
 
-func (r *ApplicationRepository) Create(ctx context.Context, studentID, listingID, coverLetter string) (*model.Application, error) {
+func (r *ApplicationRepository) Create(ctx context.Context, studentID, listingID, coverLetter, studentEmail, companyEmail string) (*model.Application, error) {
 	query := `
-		INSERT INTO applications (student_id, listing_id, cover_letter)
-		VALUES ($1, $2, $3)
-		RETURNING id, student_id, listing_id, cover_letter, status, created_at, updated_at
+		INSERT INTO applications (student_id, listing_id, cover_letter, student_email, company_email)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, student_id, listing_id, cover_letter, status, student_email, company_email, created_at, updated_at
 	`
 
 	app := &model.Application{}
-	err := r.db.QueryRow(ctx, query, studentID, listingID, coverLetter).Scan(
+	err := r.db.QueryRow(ctx, query, studentID, listingID, coverLetter, studentEmail, companyEmail).Scan(
 		&app.ID, &app.StudentID, &app.ListingID,
 		&app.CoverLetter, &app.Status,
+		&app.StudentEmail, &app.CompanyEmail,
 		&app.CreatedAt, &app.UpdatedAt,
 	)
 	if err != nil {
 		if isUniqueViolation(err) {
 			return nil, ErrConflict
 		}
-
 		return nil, err
 	}
 
@@ -51,7 +51,7 @@ func (r *ApplicationRepository) Create(ctx context.Context, studentID, listingID
 
 func (r *ApplicationRepository) GetByStudentID(ctx context.Context, studentID string) ([]model.Application, error) {
 	query := `
-		SELECT id, student_id, listing_id, cover_letter, status, created_at, updated_at
+		SELECT id, student_id, listing_id, cover_letter, status, created_at, updated_at, student_email, company_email
 		FROM applications
 		WHERE student_id = $1
 		ORDER BY created_at DESC
@@ -67,10 +67,11 @@ func (r *ApplicationRepository) GetByStudentID(ctx context.Context, studentID st
 	for rows.Next() {
 		app := model.Application{}
 
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&app.ID, &app.StudentID, &app.ListingID,
 			&app.CoverLetter, &app.Status,
 			&app.CreatedAt, &app.UpdatedAt,
+			&app.StudentEmail, &app.CompanyEmail,
 		); err != nil {
 			return nil, err
 		}
@@ -83,7 +84,7 @@ func (r *ApplicationRepository) GetByStudentID(ctx context.Context, studentID st
 
 func (r *ApplicationRepository) GetByListingID(ctx context.Context, listingID string) ([]model.Application, error) {
 	query := `
-		SELECT id, student_id, listing_id, cover_letter, status, created_at, updated_at
+		SELECT id, student_id, listing_id, cover_letter, status, created_at, updated_at, student_email, company_email
 		FROM applications
 		WHERE listing_id = $1
 		ORDER BY created_at DESC
@@ -99,10 +100,11 @@ func (r *ApplicationRepository) GetByListingID(ctx context.Context, listingID st
 	for rows.Next() {
 		app := model.Application{}
 
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&app.ID, &app.StudentID, &app.ListingID,
 			&app.CoverLetter, &app.Status,
 			&app.CreatedAt, &app.UpdatedAt,
+			&app.StudentEmail, &app.CompanyEmail,
 		); err != nil {
 			return nil, err
 		}
@@ -115,23 +117,22 @@ func (r *ApplicationRepository) GetByListingID(ctx context.Context, listingID st
 
 func (r *ApplicationRepository) GetByID(ctx context.Context, id string) (*model.Application, error) {
 	query := `
-		SELECT id, student_id, listing_id, cover_letter, status, created_at, updated_at
+		SELECT id, student_id, listing_id, cover_letter, status, student_email, company_email, created_at, updated_at
 		FROM applications
 		WHERE id = $1
 	`
 
 	app := &model.Application{}
-
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&app.ID, &app.StudentID, &app.ListingID,
 		&app.CoverLetter, &app.Status,
+		&app.StudentEmail, &app.CompanyEmail,
 		&app.CreatedAt, &app.UpdatedAt,
 	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, ErrNotFound
+	}
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-
 		return nil, err
 	}
 

@@ -9,16 +9,16 @@ const labels = {
 }
 
 const styles = {
-    applied: 'bg-primary-100 text-primary-700',
-    reviewing: 'bg-yellow-100 text-yellow-700',
-    interview: 'bg-purple-100 text-purple-700',
-    accepted: 'bg-green-100 text-green-700',
-    rejected: 'bg-red-100 text-red-700',
+    applied: 'border-primary-200 text-primary-700 bg-white',
+    reviewing: 'border-yellow-200 text-yellow-700 bg-white',
+    interview: 'border-purple-200 text-purple-700 bg-white',
+    accepted: 'border-green-200 text-green-700 bg-white',
+    rejected: 'border-red-200 text-red-700 bg-white',
 }
 
 export default function StatusBadge({ status }) {
     return (
-        <span className={clsx('text-xs font-medium px-3 py-1 rounded-full', styles[status])}>
+        <span className={clsx('text-xs font-medium px-2.5 py-1 rounded-md border', styles[status])}>
       {labels[status]}
     </span>
     )

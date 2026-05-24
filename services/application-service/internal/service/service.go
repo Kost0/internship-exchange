@@ -18,13 +18,13 @@ func NewApplicationService(repo *repository.ApplicationRepository, pub *publishe
 	return &ApplicationService{repo: repo, publisher: pub}
 }
 
-func (s *ApplicationService) Apply(ctx context.Context, studentID, listingID, coverLetter string) (*model.Application, error) {
-	app, err := s.repo.Create(ctx, studentID, listingID, coverLetter)
+func (s *ApplicationService) Apply(ctx context.Context, studentID, listingID, coverLetter, studentEmail, companyEmail string) (*model.Application, error) {
+	app, err := s.repo.Create(ctx, studentID, listingID, coverLetter, studentEmail, companyEmail)
 	if err != nil {
 		return nil, err
 	}
 
-	s.publisher.PublishApplicationCreated(ctx, app.ID, app.StudentID, app.ListingID, "")
+	s.publisher.PublishApplicationCreated(ctx, app.ID, app.StudentID, app.ListingID, app.CompanyEmail)
 
 	return app, nil
 }
@@ -83,7 +83,7 @@ func (s *ApplicationService) ChangeStatus(ctx context.Context, id, companyID str
 
 	s.publisher.PublishStatusChanged(ctx,
 		app.ID, app.StudentID, app.ListingID,
-		string(oldStatus), string(newStatus), comment,
+		string(oldStatus), string(newStatus), comment, app.StudentEmail,
 	)
 
 	events, err := s.repo.GetEvents(ctx, id)

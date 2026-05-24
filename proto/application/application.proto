@@ -52,9 +52,11 @@ message ApplicationResponse {
 }
 
 message ApplyRequest {
-  string student_id   = 1;
-  string listing_id   = 2;
-  string cover_letter = 3;
+  string student_id    = 1;
+  string listing_id    = 2;
+  string cover_letter  = 3;
+  string student_email = 4;
+  string company_email = 5;
 }
 
 message GetMyApplicationsRequest {
