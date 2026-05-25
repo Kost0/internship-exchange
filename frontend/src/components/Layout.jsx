@@ -3,11 +3,11 @@ import Navbar from './Navbar'
 
 export default function Layout() {
     return (
-        <div className="min-h-screen bg-primary-50">
+        <div style={{ minHeight: '100vh', background: 'white' }}>
             <Navbar />
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 16px' }}>
                 <Outlet />
-            </main>
+            </div>
         </div>
     )
 }

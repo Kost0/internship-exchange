@@ -4,7 +4,7 @@ import { listingsApi } from '../../api/listings'
 import JobCard from '../../components/JobCard'
 
 const formats = [
-    { value: '', label: 'Все форматы' },
+    { value: '', label: 'Все' },
     { value: 'remote', label: 'Удалённо' },
     { value: 'office', label: 'Офис' },
     { value: 'hybrid', label: 'Гибрид' },
@@ -14,94 +14,80 @@ export default function ListingsPage() {
     const [filters, setFilters] = useState({ page: 1, limit: 12 })
     const [query, setQuery] = useState('')
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['listings', filters],
         queryFn: () => listingsApi.getListings(filters),
     })
 
-    if (isError) {
-        return <p className="text-center text-gray-500 py-20">Не удалось загрузить вакансии</p>
-    }
-
     const handleSearch = (e) => {
         e.preventDefault()
-        setFilters((f) => ({ ...f, query, page: 1 }))
+        setFilters(f => ({ ...f, query, page: 1 }))
     }
 
     return (
         <div>
-            <div className="bg-white border border-gray-200 rounded-2xl px-8 py-8 mb-8">
-                <h1 className="text-3xl font-bold mb-2 text-gray-900">Найди стажировку своей мечты</h1>
-                <p className="text-gray-500 mb-6">Тысячи компаний ищут молодых специалистов прямо сейчас</p>
-                <form onSubmit={handleSearch} className="flex gap-3 max-w-2xl">
-                    <input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Поиск по вакансиям, компаниям, навыкам..."
-                        className="flex-1 px-5 py-3 rounded-lg text-gray-900 text-sm border border-gray-200 focus:outline-none focus:border-primary-300"
-                    />
-                    <button
-                        type="submit"
-                        className="bg-primary-500 text-white font-medium px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors"
-                    >
-                        Найти
-                    </button>
-                </form>
-            </div>
+            <h1 style={{ marginBottom: 16 }}>Вакансии для стажировок</h1>
 
-            <div className="flex items-center gap-3 mb-6 flex-wrap">
-                <span className="text-sm font-medium text-gray-500">Формат:</span>
-                {formats.map((f) => (
+            <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Поиск..."
+                    style={{ flex: 1, padding: '8px 12px', border: '1px solid #ccc', fontSize: 14 }}
+                />
+                <button type="submit" className="btn-primary">Найти</button>
+            </form>
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 13, color: '#555', marginRight: 4, alignSelf: 'center' }}>Формат:</span>
+                {formats.map(f => (
                     <button
                         key={f.value}
-                        onClick={() => setFilters((prev) => ({ ...prev, format: f.value || undefined, page: 1 }))}
-                        className={`text-sm px-4 py-1.5 rounded-md font-medium transition-colors ${
-                            filters.format === f.value || (!filters.format && f.value === '')
-                                ? 'bg-primary-500 text-white'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'
-                        }`}
+                        onClick={() => setFilters(prev => ({ ...prev, format: f.value || undefined, page: 1 }))}
+                        style={{
+                            padding: '4px 12px', fontSize: 13, cursor: 'pointer',
+                            border: '1px solid #ccc',
+                            background: (filters.format === f.value || (!filters.format && f.value === '')) ? '#3e85dc' : 'white',
+                            color: (filters.format === f.value || (!filters.format && f.value === '')) ? 'white' : '#333',
+                        }}
                     >
                         {f.label}
                     </button>
                 ))}
             </div>
 
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-gray-900">
-                    {`Найдено вакансий: ${data?.total ?? 0}`}
-                </h2>
+            <div style={{ fontSize: 13, color: '#555', marginBottom: 12 }}>
+                Найдено: {data?.total ?? 0}
             </div>
 
             {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-primary-100 p-5 h-48 animate-pulse" />
-                    ))}
-                </div>
+                <div>Загрузка...</div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {data?.items?.map((listing) => (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+                    {data?.items?.map(listing => (
                         <JobCard key={listing.id} listing={listing} />
                     ))}
                 </div>
             )}
 
             {(data?.total ?? 0) > (data?.limit ?? 12) && (
-                <div className="flex justify-center gap-2 mt-8">
+                <div style={{ display: 'flex', gap: 8, marginTop: 24, justifyContent: 'center', alignItems: 'center' }}>
                     <button
                         disabled={filters.page === 1}
-                        onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
-                        className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium disabled:opacity-40 hover:border-primary-300 transition"
+                        onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
+                        className="btn-secondary"
+                        style={{ opacity: filters.page === 1 ? 0.4 : 1 }}
                     >
                         ← Назад
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-500">
-            Страница {filters.page} из {Math.ceil((data?.total ?? 0) / (data?.limit ?? 12))}
-            </span>
+                    <span style={{ fontSize: 13 }}>
+                        {filters.page} / {Math.ceil((data?.total ?? 0) / (data?.limit ?? 12))}
+                    </span>
                     <button
                         disabled={filters.page >= Math.ceil((data?.total ?? 0) / (data?.limit ?? 12))}
-                        onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
-                        className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-medium disabled:opacity-40 hover:border-primary-300 transition"
+                        onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
+                        className="btn-secondary"
+                        style={{ opacity: filters.page >= Math.ceil((data?.total ?? 0) / (data?.limit ?? 12)) ? 0.4 : 1 }}
                     >
                         Вперёд →
                     </button>

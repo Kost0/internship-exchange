@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../store/auth'
-import clsx from 'clsx'
 
 export default function Register() {
     const navigate = useNavigate()
@@ -21,86 +20,47 @@ export default function Register() {
     })
 
     return (
-        <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 py-12">
-            <div className="bg-white rounded-3xl border border-primary-100 p-10 w-full max-w-md shadow-sm">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Создать аккаунт</h1>
-                <p className="text-sm text-gray-500 mb-6">
-                    Уже есть аккаунт?{' '}
-                    <Link to="/login" className="text-primary-600 font-medium hover:underline">
-                        Войти
-                    </Link>
-                </p>
+        <div style={{ maxWidth: 400, margin: '60px auto', border: '1px solid #ccc', padding: 24, borderRadius: 10 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 20 }}>Регистрация</h2>
 
-                <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-                    {['student', 'company'].map((r) => (
-                        <button
-                            key={r}
-                            type="button"
-                            onClick={() => setRole(r)}
-                            className={clsx(
-                                'flex-1 py-2 text-sm font-medium rounded-lg transition-all',
-                                role === r ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500'
-                            )}
-                        >
-                            {r === 'student' ? 'Я студент' : 'Я компания'}
-                        </button>
-                    ))}
+            <div style={{ marginBottom: 16, display: 'flex', gap: 0 }}>
+                <button
+                    type="button"
+                    onClick={() => setRole('student')}
+                    style={{ flex: 1, padding: '8px', border: '1px solid #ccc', background: role === 'student' ? '#3e85dc' : 'white', color: role === 'student' ? 'white' : '#333', cursor: 'pointer', fontSize: 13 }}
+                >
+                    Студент
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setRole('company')}
+                    style={{ flex: 1, padding: '8px', border: '1px solid #ccc', borderLeft: 'none', background: role === 'company' ? '#3e85dc' : 'white', color: role === 'company' ? 'white' : '#333', cursor: 'pointer', fontSize: 13 }}
+                >
+                    Компания
+                </button>
+            </div>
+
+            <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+                <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 13, marginBottom: 4 }}>Email</div>
+                    <input {...register('email', { required: true })} type="email" className="input-base" />
                 </div>
-
-                <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Email</label>
-                        <input
-                            {...register('email', { required: 'Обязательное поле' })}
-                            type="email"
-                            placeholder={role === 'student' ? 'ivan@university.ru' : 'hr@company.ru'}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition"
-                        />
-                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Пароль</label>
-                        <input
-                            {...register('password', {
-                                required: 'Обязательное поле',
-                                minLength: { value: 8, message: 'Минимум 8 символов' }
-                            })}
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition"
-                        />
-                        {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Повторите пароль</label>
-                        <input
-                            {...register('confirmPassword', {
-                                required: 'Обязательное поле',
-                                validate: (v) => v === watch('password') || 'Пароли не совпадают',
-                            })}
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition"
-                        />
-                        {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword.message}</p>}
-                    </div>
-
-                    {mutation.isError && (
-                        <p className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3">
-                            Ошибка регистрации. Попробуйте другой email.
-                        </p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={mutation.isPending}
-                        className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 mt-2"
-                    >
-                        {mutation.isPending ? 'Создаём аккаунт...' : 'Зарегистрироваться'}
-                    </button>
-                </form>
+                <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 13, marginBottom: 4 }}>Пароль</div>
+                    <input {...register('password', { required: true, minLength: 8 })} type="password" className="input-base" />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, marginBottom: 4 }}>Повторите пароль</div>
+                    <input {...register('confirmPassword', { validate: v => v === watch('password') || 'Пароли не совпадают' })} type="password" className="input-base" />
+                    {errors.confirmPassword && <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.confirmPassword.message}</div>}
+                </div>
+                {mutation.isError && <div style={{ color: 'red', fontSize: 13, marginBottom: 12 }}>Ошибка регистрации</div>}
+                <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                    {mutation.isPending ? 'Создаём...' : 'Зарегистрироваться'}
+                </button>
+            </form>
+            <div style={{ marginTop: 16, fontSize: 13 }}>
+                Уже есть аккаунт? <Link to="/login">Войти</Link>
             </div>
         </div>
     )

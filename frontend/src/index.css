@@ -1,41 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #f0f6ff;
-  --color-primary-100: #e0edfe;
-  --color-primary-200: #c0dafd;
-  --color-primary-300: #93bcfb;
-  --color-primary-400: #6099f7;
   --color-primary-500: #3e85dc;
   --color-primary-600: #2660ab;
-  --color-primary-700: #1d4d89;
-  --color-primary-800: #1a3f6f;
-  --color-primary-900: #19335a;
 }
 
 @layer components {
   .input-base {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-200 text-sm bg-white
-    focus:outline-none focus:border-primary-300 transition;
+    @apply w-full px-3 py-2 border border-gray-400 text-sm bg-white focus:outline-none;
+    border-radius: 6px;
   }
 
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium
-    rounded-lg transition-colors disabled:opacity-60;
+    @apply bg-primary-500 text-white text-sm px-4 py-2 hover:bg-primary-600;
+    border-radius: 6px;
   }
 
   .btn-secondary {
-    @apply border border-gray-200 hover:border-gray-300 text-gray-700
-    font-medium rounded-lg bg-white transition-colors;
-  }
-
-  .card {
-    @apply bg-white rounded-2xl border border-gray-200 p-6;
+    @apply border border-gray-400 text-gray-700 text-sm px-4 py-2 bg-white hover:bg-gray-50;
+    border-radius: 6px;
   }
 }
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-white text-gray-900;
   }
 }

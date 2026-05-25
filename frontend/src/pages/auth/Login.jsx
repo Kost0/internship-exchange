@@ -18,56 +18,25 @@ export default function Login() {
     })
 
     return (
-        <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4">
-            <div className="bg-white rounded-3xl border border-primary-100 p-10 w-full max-w-md shadow-sm">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Добро пожаловать</h1>
-                <p className="text-sm text-gray-500 mb-8">
-                    Нет аккаунта?{' '}
-                    <Link to="/register" className="text-primary-600 font-medium hover:underline">
-                        Зарегистрироваться
-                    </Link>
-                </p>
+        <div style={{ maxWidth: 400, margin: '60px auto', border: '1px solid #ccc', padding: 24, borderRadius: 10 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 20 }}>Войти</h2>
 
-                <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Email</label>
-                        <input
-                            {...register('email', { required: 'Обязательное поле' })}
-                            type="email"
-                            placeholder="ivan@university.ru"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition"
-                        />
-                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Пароль</label>
-                        <input
-                            {...register('password', {
-                                required: 'Обязательное поле',
-                                minLength: { value: 8, message: 'Минимум 8 символов' }
-                            })}
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition"
-                        />
-                        {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
-                    </div>
-
-                    {mutation.isError && (
-                        <p className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3">
-                            Неверный email или пароль
-                        </p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={mutation.isPending}
-                        className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-60 mt-2"
-                    >
-                        {mutation.isPending ? 'Входим...' : 'Войти'}
-                    </button>
-                </form>
+            <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+                <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 13, marginBottom: 4 }}>Email</div>
+                    <input {...register('email', { required: true })} type="email" className="input-base" />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, marginBottom: 4 }}>Пароль</div>
+                    <input {...register('password', { required: true })} type="password" className="input-base" />
+                </div>
+                {mutation.isError && <div style={{ color: 'red', fontSize: 13, marginBottom: 12 }}>Неверный email или пароль</div>}
+                <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                    {mutation.isPending ? 'Входим...' : 'Войти'}
+                </button>
+            </form>
+            <div style={{ marginTop: 16, fontSize: 13 }}>
+                Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
             </div>
         </div>
     )
